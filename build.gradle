@@ -13,6 +13,7 @@ repositories {
 ext {
     junitVersion = '5.8.2'
 }
+
 java {
     sourceCompatibility = '11'
     targetCompatibility = '11'
@@ -31,7 +32,7 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok:1.18.30'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
-    
+
     implementation 'org.mybatis:mybatis:3.5.15'
     implementation 'commons-fileupload:commons-fileupload:1.5'
     implementation 'commons-io:commons-io:2.15.1'
@@ -45,7 +46,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
     implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
 }
-
 test {
     useJUnitPlatform()
 }

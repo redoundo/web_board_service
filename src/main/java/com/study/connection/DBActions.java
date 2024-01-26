@@ -6,10 +6,11 @@ import lombok.NonNull;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class DBActions {
-    String fullContentSelect = "content_id,content_category_id,password,view_count,nickname,title,submit_date,update_date,(SELECT COUNT(*) FROM files WHERE files.content_id_have_file=contents.content_id) AS file_existence ";
+    String fullContentSelect = "content_id,content_category_id,password,view_count,content,nickname,title,submit_date,update_date,(SELECT COUNT(*) FROM files WHERE files.content_id_have_file=contents.content_id) AS file_existence ";
     String fullCommentSelect = "commented_content_id,comment_id,comment_user,comment,commented_date";
 
     List<String> fullContentSelectElements = new ArrayList<>(Arrays.asList("content_id" , "content_category_id" , "password" , "view_count" , "nickname" , "title" ,
@@ -43,23 +44,11 @@ public class DBActions {
         return entityList;
     }
 
-    public List<Map<String,String>> conditionalSearch (String select , @NonNull String condition , List<String> selectParam ) throws RuntimeException {
+    public List<Map<String,String>> conditionalSearch (String sql , List<String> selectParam ) throws RuntimeException {
         DBConnection conditionalSearch = new DBConnection();
         List<Map<String,String>> resultsList = new ArrayList<>();
-        String searchSql = "SELECT ";
-        if(select == null || selectParam == null){
-            //편의성을 위해 제공했지만 전체 내용을 검색하게 된다.
-            searchSql = fullContentSelect;
-        }else {
-            searchSql = searchSql+ select + "FROM contents ";
-        }
-        if(condition.length()>1) {
-            searchSql = searchSql + "WHERE " + condition + ";";
-        }else {
-            searchSql = searchSql + ";";
-        }
         try(Connection connection = conditionalSearch.getConnection()){
-            ResultSet resultSet = connection.createStatement().executeQuery(searchSql);
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
             while(resultSet.next()) {
                 Map<String,String> resultsMap = new HashMap<>();
                 //매개변수 select,condition을 문자열로 보내는 대신 select의 내용을 리스트 형식으로 담은 selectParam이 요구된다.

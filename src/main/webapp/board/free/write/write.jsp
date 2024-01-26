@@ -1,26 +1,20 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <title>게시판 - 등록</title>
-</head>
-<body>
 <script type="text/javascript">
-    //로드될 때 한번만 실행되며 카테고리 id와 이름을 request에 담아오게 해주는 함수이다.
     function writeAjax() {
         $.ajax({
             type : "GET" ,
-            url : window.location.href.replace("http://localhost:8080" , "").replace("write.jsp" , "writeProcess.jsp")
+            url : window.location.href.replace("http://localhost:8080" , "").replace("write.jsp" , "getCategory.jsp") ,
+            success(data) {
+                $("#categorySelect").html(data); // 글 등록에 필요한 카테고리 제공을 위해 getCategory.jsp의 결과를 담은 writeCategory.jsp를 data로 제공.
+            }
         })
         $(this).off();
     }
     $(writeAjax)
 </script>
-<div id="mgt_course_write">
+<div id="writing">
     <h2>게시판 - 등록</h2>
     <div>
         <div class="OptForm">
@@ -34,17 +28,11 @@
                     </thead>
                     <tbody>
                     <tr>
-                        <%--el태그에 저장해 놓지 않으면 형변환이 계속 필요하다. 하지만 스크립틀릿이 아닌 el표현식의 경우 명시적 형변환이 불가능하다.--%>
-                        <c:set var="savedCategories" value="<%=(Map<Integer,String>) request.getAttribute("categories")%>"/>
                         <th scope="row">카테고리*</th>
                         <td>
                             <label for="categorySelect">
                                 <select id="categorySelect" name="writeCategory">
-                                    <option value=null>카테고리 선택</option>
-                                    <%--savedCategories의 value만 가지고 반복한다.--%>
-                                    <c:forEach var="categories" varStatus="index" items="${savedCategories.values().toArray()}">
-                                        <option value="${index}">${savedCategories.get(categories)}</option>
-                                    </c:forEach>
+                                    <%--writeCategory.jsp의 내용--%>
                                 </select>
                             </label>
                         </td>
@@ -87,10 +75,9 @@
                     <tr>
                         <th scope="row">파일 첨부</th>
                         <td>
-                            <%--TODO : 파일 첨부 기능 구현 필요--%>
-                            <label for="addFile1"><input name="file1" type="file" id="addFile1"/></label>
-                            <label for="addFile2"><input name="file2" type="file" id="addFile2"/></label>
-                            <label for="addFile3"><input name="file3" type="file" id="addFile3"/></label>
+                            <label for="addFile1"><input name="writeFile1" type="file" id="addFile1"/></label>
+                            <label for="addFile2"><input name="writeFile2" type="file" id="addFile2"/></label>
+                            <label for="addFile3"><input name="writeFile3" type="file" id="addFile3"/></label>
                         </td>
                     </tr>
                     </tbody>
@@ -107,9 +94,6 @@
 </div>
 <script type="text/javascript">
     function cancelWrite() {
-        return location.href = "/board/free/list/board.jsp";
+        return location.href = window.location.href.replace("http://localhost:8080" , "").replace("write/write.jsp" ,"list/boardProcess.jsp")
     }
 </script>
-</body>
-</html>
-

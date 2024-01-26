@@ -16,7 +16,6 @@
             }
         }
         try {
-            //content_id를 넣었으므로 하나만 나와야 하지만 이걸 위해 굳이 나눌 이유는 없으므로 list를 반환하는 방법을 사용했다.
             List<ContentsEntity> entityList = new DBActions().returnFullContents(contentIdSql);
             if(entityList.size() == 1) {
                 ContentsEntity entity = entityList.get(0);
@@ -61,7 +60,6 @@
                 request.setAttribute("content_id" , contents.getContentId());
                 request.setAttribute("submit_date" , contents.getSubmitDate());
                 request.setAttribute("update_date" , contents.getUpdateDate());
-                //TODO : 패스워드를 writeProcess.jsp에서 받아와도 괜찮은지 알아보자.
                 request.setAttribute("password" , contents.getPassword());
             }
         }catch (RuntimeException e) {

@@ -2,10 +2,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.study.connection.DBActions" %>
 <%@ page import="com.study.connection.CategoriesResults" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Arrays" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%
-//    if (request.getParameter("end") != null || request.getParameter("start") != null) {
+    //    if (request.getParameter("end") != null || request.getParameter("start") != null) {
 //        if (request.getParameter("end") != null && request.getParameter("start") != null) {
 //            params.add("submit_date BETWEEN " + "STR_TO_DATE('" + request.getParameter("start") + "','%Y.%m.%d %H:%i') AND STR_TO_DATE('" + request.getParameter("end") + "','%Y.%m.%d %H:%i')");
 //        } else {
@@ -55,10 +58,16 @@
 
     if((int) request.getAttribute("file_existence") == 1) {
         //파일이 존재할 때 content_id로 파일 경로를 가져온다.
-
+        try {
+            String sql = "SELECT file_id,file_name,file_path,file_extension FROM files WHERE content_id_have_file="
+                    + request.getAttribute("content_id") + ";";
+            List<Map<String,String>> files = new DBActions().conditionalSearch(sql
+                    , new ArrayList<>(Arrays.asList("file_id" , "file_name" , "file_path" , "file_extension")));
+            request.setAttribute("files" , files);
+        } catch (Exception e) {
+            System.out.println("modifyProcessWhileGetFile :   " + e.getMessage());
+        }
     }
-
-
 
     RequestDispatcher requestDispatcher = request.getRequestDispatcher(request.getRequestURL().toString().replace("http://localhost:8080" , "").replace("modifyProcess.jsp" , "modify.jsp"));
     requestDispatcher.forward(request,response);

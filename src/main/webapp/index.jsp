@@ -17,13 +17,41 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>website</title>
+    <title>자유 게시판 - 목록입니다.</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <form action="/board/free/files/uploadFile.jsp" method="post" enctype="multipart/form-data">
-        <input name="file" type="file" />
-        <input type="submit" value="업로드"/>
-    </form>
+<script type="text/javascript">
+    function boardInitAjax() {
+        $.ajax({
+            type : "POST" , url : "board/free/list/boardProcess.jsp?status=init",
+            success(data) {
+                // 초기화면 정보 제공을 위해 boardProcess.jsp에서 처리한 내용을 담은 board.jsp를 data로 넘겨준다.
+                $("#init").html(data);
+            }
+        })
+        $(this).off();
+    }
+    function boardAjax() {
+        $.ajax({
+            type : "GET" , url : window.location.href.replace("http://localhost:8080" , "")
+                .replace( "index.jsp", "board/free/list/boardProcess.jsp") ,
+            success(data) {
+                $("#init").html(data);
+            }
+        })
+        $(this).off();
+    }
+    if(window.location.href.includes("?")){
+        //쿼리스트링이 존재하는 경우 보통 검색 후에 view.jsp -> index.jsp 경로로 유입 되는 경우다.
+        $(boardInitAjax);
+    } else {
+        //처음 화면이 아니더라도 init으로 동일하게 취급
+        $(boardAjax);
+    }
+</script>
+<div id="init">
+    <%--board.jsp의 내용--%>
+</div>
 </body>
 </html>

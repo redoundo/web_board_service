@@ -26,25 +26,25 @@
         //1,2,3 모두 쿼리스트링에 특정 content_id가 있을 이유가 없다. 때문에 존재하더라도 추가하지 않는다.
         if (request.getParameter("content_id") == null) {
 
-        for (String param : request.getParameterMap().keySet()) {
-            String paramValue = request.getParameter(param);
-            //화면 상태에 따라 함수 적용을 달리 할 예정이기에 따로 분기점을 만들었다.
-            if (Objects.equals(param, "status")) {
-                if (!Objects.equals(paramValue, "init")) {
-                    status = paramValue;
-                }
-            } else {
-                //status가 아닌 경우 전부 조건이다.
-                if (Objects.equals(param, "category")) {
-                    //태그 이름은 category이지만 실제로는 int인 content_category_id로 int는 '' 있으면 오류가 나기 때문에 따로 처리.
-                    if (!paramValue.isEmpty()) {
-                        //전체 카테고리는 빈 문자열이고 조건문으로 넣을 필요가 없다.
-                        conditionsList.add(param + "=" + paramValue);
+            for (String param : request.getParameterMap().keySet()) {
+                String paramValue = request.getParameter(param);
+                //화면 상태에 따라 함수 적용을 달리 할 예정이기에 따로 분기점을 만들었다.
+                if (Objects.equals(param, "status")) {
+                    if (!Objects.equals(paramValue, "init")) {
+                        status = paramValue;
                     }
-                } else if (Objects.equals(param, "keyword")) {
-                    //TODO : 간단하게 like를 사용했으나 regexp를 사용해보는건 어떨까.
-                    conditionsList.add("title like '%" + paramValue + "%'");
-                }
+                } else {
+                    //status가 아닌 경우 전부 조건이다.
+                    if (Objects.equals(param, "category")) {
+                        //태그 이름은 category이지만 실제로는 int인 content_category_id로 int는 '' 있으면 오류가 나기 때문에 따로 처리.
+                        if (!paramValue.isEmpty()) {
+                            //전체 카테고리는 빈 문자열이고 조건문으로 넣을 필요가 없다.
+                            conditionsList.add(param + "=" + paramValue);
+                        }
+                    } else if (Objects.equals(param, "keyword")) {
+                        //TODO : 간단하게 like를 사용했으나 regexp를 사용해보는건 어떨까.
+                        conditionsList.add("title like '%" + paramValue + "%'");
+                    }
                 }
             }
         }
@@ -68,7 +68,7 @@
                 request.setAttribute("status", status);
                 request.setAttribute("total", contents.size());
                 request.setAttribute("contents", contents);
-
+                System.out.println(contents.get(0).getContent());
             } else {
                 //total으로 forEach 태그를 사용해야할지 여부를 확인한다.
                 request.setAttribute("total", 0);
@@ -77,7 +77,6 @@
             System.out.println("initContentsError" + e.getMessage());
             request.setAttribute("total", null);
         }
-        //ajax 통신의 경우에는 그냥 setAttribute만 하면 board.jsp에서 자동으로 인식할 수 있는지 알아보아야겠다.
     } else {
         //2,3번 처리 과정.
         try {
@@ -94,7 +93,11 @@
         //index.jsp가 board.jsp를 가지고 있을 때는 /로 이동, 아닐 때는 /board/free/list...으로 이동해야한다.
         //검색 조건에는 start , end , keyword , category 밖에 없다. sql에는 반드시 가공 후에 사용해야한다.
         //TODO : 이렇게 파라미터를 포함하고 보내본적이 없어서 이게 오류를 발생시킬지 아닐지는 모르겠다. 오류가 난다면 다른 방법을 강구해야한다.
-        RequestDispatcher dispatcher = request.getRequestDispatcher(request.getRequestURL().toString().replace("http://localhost:8080" , "").replace("boardProcess.jsp" , "board.jsp"));
-        dispatcher.forward(request, response);
+        ;
     }
+    System.out.println(request.getRequestURL().toString());
+    System.out.println(request.getAttribute("contents"));
+    RequestDispatcher dispatcher = request.getRequestDispatcher("/board/free/list/board.jsp");
+            //(request.getRequestURL().toString().replace("http://localhost:8080/" , "").replace("boardProcess.jsp" , "board.jsp"));
+    dispatcher.include(request, response);
 %>
