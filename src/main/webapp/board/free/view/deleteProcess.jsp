@@ -1,4 +1,4 @@
-<%@ page import="com.study.connection.DBActions" %>
+<%@ page import="com.study.connection.dao.ContentsDAO" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8" %>
 
@@ -7,11 +7,11 @@
     String contentId = request.getParameter("content_id");
 
     try {
-        new DBActions().updateDB("DELETE FROM contents WHERE content_id=" + contentId);
+        new ContentsDAO("delete" , "content_id=" + contentId).update();
     } catch (Exception e) {
-        System.out.println("DeleteProcessError :  " + e.getMessage());
+        e.getStackTrace();
     }
 
-    RequestDispatcher requestDispatcher = request.getRequestDispatcher(request.getRequestURL().toString().replace("http://localhost:8080" , "").replace("view/deleteProcess.jsp" , "board/board.jsp"));
-    requestDispatcher.forward(request , response);
+    request.getRequestDispatcher(request.getRequestURL().toString().replace("http://localhost:8080" , "")
+            .replace("view/deleteProcess.jsp" , "board/board.jsp")).forward(request , response);
 %>

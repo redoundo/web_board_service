@@ -1,8 +1,8 @@
 package com.study.connection.entity;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Date;
 
@@ -13,6 +13,6 @@ public class ContentsEntity {
     String password , nickname , title , content ;
     Integer contentId , contentCategoryId , viewCount;
     Date submitDate;
-    Date updateDate;
+    @Nullable Date updateDate;
     Boolean fileExistence;
 }

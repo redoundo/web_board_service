@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%--커맨드 패턴, 멀티파트, 컨벤션 코드, document 주석, class 주석, 팩토리 패턴
     커맨드 패턴의 경우 객체를 만든다. 그걸 인터페이스로 만든다. list, view , update, insert가 인터페이스를 상속받는다.
     동일한 기점으로 실행할 수 있는 건 커맨드로 만들 수 있다.
@@ -17,13 +17,11 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>website</title>
+    <title>자유 게시판 - 목록입니다.</title>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <form action="/board/free/files/uploadFile.jsp" method="post" enctype="multipart/form-data">
-        <input name="file" type="file" />
-        <input type="submit" value="업로드"/>
-    </form>
+<%request.setCharacterEncoding("UTF-8");%>
+<%@include file="board/free/list/board.jsp"%>
 </body>
 </html>

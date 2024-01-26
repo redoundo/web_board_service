@@ -10,8 +10,7 @@
     request.setCharacterEncoding("UTF-8");
     int content_id =  1;
     String savePath = "C:/Users/admin/file"; // 저장할 전체 파일 경로
-    String realPath = request.getServletContext().getRealPath("./"); //서블릿이 동작하는 서버 경로
-    Part filePart = request.getPart("file"); //form 태그 중 name = file 인 값을 inputStream 받기 위한 객체
+    Part filePart = (Part) request.getPart("file"); //form 태그 중 name = file 인 값을 inputStream 받기 위한 객체
     String fileName = filePart.getSubmittedFileName();
     String uploadPath = savePath + File.separator +fileName; // 업로드 경로
     String fileExtension = fileName.substring(fileName.lastIndexOf("."));//파일 확장자
@@ -31,7 +30,7 @@
 
     try {
         String uploadSql = "INSERT INTO files(content_id_have_file,file_name,file_volume,file_path,file_original_name,file_extension) VALUES(" +
-               1 + ",'" + fileName + "'," + fileSize + ",'" + uploadPath + "','" + fileName + "','" + fileExtension + "');";
+                1 + ",'" + fileName + "'," + fileSize + ",'" + uploadPath + "','" + fileName + "','" + fileExtension + "');";
         new DBActions().updateDB(uploadSql);
     } catch (Exception e) {
         System.out.println("ErrorWhileUploading :  " + e.getMessage());

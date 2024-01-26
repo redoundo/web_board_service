@@ -1,69 +1,108 @@
 <%@ page import="java.util.List" %>
-<%@ page import="com.study.connection.entity.ContentsEntity" %>
-<%@ page import="java.time.ZoneId" %>
+<%@ page import="java.util.HashMap" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="com.study.connection.dao.ContentDao" %>
+<%@ page import="com.study.connection.dto.ContentDto" %>
+<%@ page import="com.study.connection.dao.CategoriesDao" %>
+<%@ page import="java.sql.Date" %>
+<%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.time.format.DateTimeFormatter" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<html>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<html lang="ko">
 <head>
     <title>자유 게시판 - 목록입니다.</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
 </head>
 <body>
+<%
+
+    request.setCharacterEncoding("UTF-8");
+    //검색했을 경우를 대비하여 검색 조건이 쿼리스트링에 존재하는지 확인.
+    String end = request.getParameter("end");
+    String start = request.getParameter("start");
+    String category = request.getParameter("category");
+    String keyword = request.getParameter("keyword");
+    String content= request.getParameter("content_id");
+    String pageNumber = request.getParameter("page");
+
+    Map<String , String> map = new HashMap<>();
+    map.put("end" , end);
+    map.put("start" , start);
+    map.put("content_category_id" , category);
+    map.put("content_id" , content);
+    map.put("keyword" , keyword);
+    map.put("page" , pageNumber);//limit page,10. default 1.
+
+    ContentDao dao= new ContentDao();
+    List<ContentDto> dtos = dao.select(map);//최대 10개만 존재.
+    Integer total = dao.total();//위 조건의 전체 값. default 0.
+
+    Map<Integer , String> categories = new CategoriesDao().select();
+
+    Date today = Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d")));
+    Date before = Date.valueOf(LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("y-M-d")));
+%>
 <div id="Board">
     <h2>자유 게시판 - 목록입니다.</h2>
     <div>
-        <%--초기 화면 출력에 필요한 db내용을 가져오기 위해 boardProcess.jsp로 ajax를 날린다.--%>
-        <%--화면이 새로고침 되거나 최초로 출력된게 아니라면 반드시 한번만 실행되는 스크립트이다.--%>
-        <%--ajax의 값은 받을 필요없다. setAttribute를 통해 페이지에서 불러낼 수 있다.--%>
-        <script type="text/javascript">
-            function ajax() {
-                $.ajax({
-                    type: "GET" , url: "/board/free/write/write.jsp?status=init"
-                })
-                $(this).off();
-            }
-            $(ajax);
-        </script>
         <div id="BoardOptDiv">
-            <form id="OptForm">
-            <span id="OptFormSpan">
-                <p id="RegistrationDateText">
-                    등록일
-                </p>
+            <form id="OptForm" method="get" action="main">
+            <div id="OptFormSpan">
+                <p id="RegistrationDateText"> 등록일</p>
                 <span id="SetRegisteredDate">
-                    <c:set var="today" value="<%=new java.util.Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()%>" scope="application"/>
                     <label for="RegisteredDateFrom">
-                        <input name="start" id="RegisteredDateFrom" type="date" value="${today.minusYears(1)}"/>
+                        <input name="start" id="RegisteredDateFrom" type="date" value='<%=
+                        request.getParameter("start") != null ? Date.valueOf(request.getParameter("start")) : before%>'/>
                     </label>
                     <p>~</p>
                     <label for="RegisteredDateEnd">
-                        <input name="end" id="RegisteredDateEnd" type="date" value="${today}"/>
+                        <input name="end" id="RegisteredDateEnd" type="date" value='<%=
+                        request.getParameter("end") != null ? Date.valueOf(request.getParameter("end")) : today%>'/>
                     </label>
                 </span>
                 <span id="SearchOpt" >
                     <label for="CategoryOpt">
                         <select id="CategoryOpt" name="category" >
-                            <c:set var="categorMap" value="<%=request.getAttribute("categories")%>"/>
-                            <%--init이던 main이던 categories는 request의 결과값과 같이 온다.--%>
-                            <option value="" selected>전체 카테고리</option>
-                            <c:forEach var="categories" varStatus="opt" items="${categorMap.values().toArray()}">
-                                <option value="${opt.index+1}">${categories}</option>
-                            </c:forEach>
+                            <c:set var="categorMap" value='<%=categories%>'/>
+                            <c:choose>
+                                <c:when test='<%=request.getParameter("category") != null &&
+                                !request.getParameter("category").isEmpty() &&
+                                !request.getParameter("category").equals("null")%>'>
+                                    <option value=null>전체 카테고리</option>
+                                    <c:set var="req" value='<%=request.getParameter("category")%>'/>
+                                    <c:forEach var="names" items="${categorMap.keySet().toArray()}">
+                                        <c:if test="${names == req}">
+                                            <option value="${names}" selected>${categorMap.get(names)}</option>
+                                        </c:if>
+                                        <option value="${names}">${categorMap.get(names)}</option>
+                                    </c:forEach>
+                                </c:when>
+                                <c:otherwise>
+                                    <c:if test="<%=categories != null && categories.size() >1%>">
+                                        <option value=null selected>전체 카테고리</option>
+                                        <c:forEach var="name" varStatus="opt" items="${categorMap.keySet().toArray()}">
+                                            <option value="${name}">${categorMap.get(name)}</option>
+                                        </c:forEach>
+                                    </c:if>
+                                </c:otherwise>
+                            </c:choose>
                         </select>
                     </label>
                     <label for="KeywordInput">
                         <input name="keyword" id="KeywordInput" placeholder="검색어를 입력해주세요.(제목+작성자+내용)"/>
                     </label>
                 </span>
-            </span>
+            </div>
+                <input type="hidden" name="Type" value="BOARD_SELECT"/>
+                <input type="submit" value="검색" />
             </form>
-            <input form="OptForm" type="submit" value="검색" formmethod="get" formaction="boardProcess.jsp"/>
         </div>
     </div>
-    <div id="Result">
-        <h6 id="ResultsCount">총 <%=request.getParameter("total") == null? 0 : request.getParameter("total")%>건</h6>
-        <table id="ResultList">
+    <div id='Result'>
+        <h6 id='ResultsCount'>총 <%=total%>건</h6>
+        <table id='ResultList'>
             <thead>
             <tr>
                 <th scope="col"></th>
@@ -77,19 +116,18 @@
             </tr>
             </thead>
             <c:choose>
-                <%--결과가 없거나 오류가 발생했을 수도 있으므로 조건문을 통해 확인한뒤 진입한다.--%>
-                <c:when test="<%=request.getAttribute("total") != null || (Integer) request.getAttribute("total") != 0%>">
+                <c:when test='<%=total > 0 && !dtos.isEmpty()%>'>
                     <tbody>
-                    <c:forEach var="initresults" varStatus="res" items="<%=(List<ContentsEntity>) request.getAttribute("contents")%>">
+                    <c:forEach var="result" varStatus="res" items='<%=dtos%>'>
                         <th scope="row"></th>
-                        <tr>${categorMap.get(initresults.contentCategoryId)}</tr>
-                        <tr>${initresults.fileExistence == 0? "존재" : ""}</tr>
+                        <tr>${categorMap.get(result.contentCategoryId)}</tr>
+                        <tr>${result.fileExistence == true? "존재" : ""}</tr>
                         <%--content_id를 param으로 가진 채 각각의 content로 이동하는 input 버튼--%>
-                        <input class="moveInput" type="button" value="${initresults.title}" onclick="moveToView(${initresults.contentId})"/>
-                        <tr>${initresults.nickname}</tr>
-                        <tr>${initresults.viewCount}</tr>
-                        <tr>${initresults.submitDate}</tr>
-                        <tr>${initresults.updateDate == null? "-" : initresults.updateDate}</tr>
+                        <input class="moveInput" type="button" value="${result.title}" onclick="moveToView(${result.contentId})"/>
+                        <tr>${result.nickname}</tr>
+                        <tr>${result.viewCount}</tr>
+                        <tr>${result.submitDate}</tr>
+                        <tr>${result.updateDate == null? "-" : result.updateDate}</tr>
                     </c:forEach>
                     </tbody>
                 </c:when>
@@ -101,18 +139,21 @@
             </c:choose>
         </table>
     </div>
+    <%@include file="pagination.jsp"%>
 </div>
 <div id="creatContentDiv">
-    <button type="button" onclick="location.href='board/free/write/write.jsp'">등록</button>
+    <button type="button" onclick="location.href='/board/free/write/write.jsp'">등록</button>
 </div>
 <script type="text/javascript">
     function moveToView(contentId){
-        //TODO : 현재 경로가 어디로 될지 확실하게 정하지 못한 상태.
-        //만약 검색을 했다면 boardProcess.jsp에서 쿼리스트링을 포함해줬을 것이다. 아니라면 오로지 content_id만 포함한다.
-        if(window.location.href.includes(".jsp?")) {
-            return location.href = window.location.href.replace("http://localhost:8080" , "").replace("list/board.jsp" , "view/view.jsp") + "&content_id=" + contentId;
-        }else{
-            return location.href = window.location.href.replace("http://localhost:8080" , "").replace("list/board.jsp" , "view/view.jsp") + "?content_id=" +contentId;
+        if (window.location.href.includes("content_id=") === false) {
+            if(window.location.href.includes(".jsp?")) {
+                //?을 포함하면 검색을 한걸로 취급하고 &content_id를 붙인다.
+                return location.href = window.location.href.replace("http://localhost:8080" , "").replace("list/board.jsp" , "view/view.jsp") + "&content_id=" + contentId;
+            }else{
+                //아니면 ?을 붙이고 content_id를 붙인다.
+                return location.href = window.location.href.replace("http://localhost:8080" , "").replace("list/board.jsp" , "view/view.jsp") + "?content_id=" +contentId;
+            }
         }
     }
 </script>
