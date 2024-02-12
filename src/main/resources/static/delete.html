@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>게시판 - 수정</title>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="deleteDiv" th:fragment="forDelete" style="display: none">
+    <form id="deleteForm">
+        <input type="hidden" name="originalPassword" id="originalPassword" th:value="${content.getPassword()}"/>
+        <input type="hidden" id="contentId" name="commentedContentId" th:value="${content.getContentId}"/>
+        <span><label for="passwordForDelete">비밀번호*</label></span>
+        <span><input id="passwordForDelete" name="password" type="password" placeholder="비밀번호를 입력해 주세요."/></span>
+    </form>
+    <span>
+        <!--deleteDiv 를 보이지 않게 만든다.-->
+        <button type="button" onclick="changeDisplay('none')">취소</button>
+        <input id="provePassword" type="submit" onsubmit="checkPassword()"  form="deleteForm"  formaction="delete"
+               formmethod="post" value="확인"/>
+    </span>
+</div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function checkPassword(){
+        let same = false;
+        $.ajax({
+            method : "post" , url : "checkPassword" ,
+            data : {password : $("#passwordForDelete").val() , original : $("#originalPassword").val()} ,
+            success : function(val){
+                if(val !== null){
+                    same = val
+                    if(val === false){
+                        alert("비밀번호가 동일하지 않습니다!!");
+                    }
+                }
+            } ,
+            error : function(err){
+                console.log(err);
+                alert("잠시 후 다시 시도해주세요.");
+            }
+        })
+        return same;
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

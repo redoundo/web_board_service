@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.ContentMapper">
+    <insert id="insertContent" parameterType="InsertContent" useGeneratedKeys="true">
+        INSERT INTO contents (content_id, content_category_id , view_count ,
+                              title , content , password , nickname , submit_date)
+        VALUES (#{contentId} , #{contentCategoryId} , #{viewCount} ,
+                #{title} , #{content} , #{password} ,
+                #{nickname} , #{submitDate})
+        ;
+    </insert>
+    <delete id="deleteContent" parameterType="java.lang.Integer">
+        DELETE FROM content , file , comment
+        USING contents content , files file , comments comment
+        WHERE content.content_id=#{id} AND file.content_id_have_file=#{id}
+          AND comment.commented_content_id=#{id}
+        ;
+    </delete>
+    <update id="updateContent">
+        UPDATE contents SET title=#{entity.title},content=#{entity.content},
+                            nickname=#{entity.nickname},update_date=#{entity.updateDate}
+        WHERE content_id=#{id}
+        ;
+    </update>
+    <select id="selectContent" parameterType="java.lang.Integer" resultType="contentDto">
+        SELECT content_id,content_category_id,
+               view_count,content,nickname,title,
+               submit_date,update_date,
+               (SELECT IF ( COUNT(*)>0 , 'true' , 'false' ) FROM files
+                WHERE files.content_id_have_file= contents.content_id) AS file_existence
+        FROM contents
+        WHERE content_id=#{id}
+    </select>
+    <select id="selectQueriedContents" resultType="selectContentDto" parameterType="condition">
+        SELECT content_id,content_category_id,
+        view_count,content,nickname,title,
+        submit_date,update_date,
+        (SELECT IF ( COUNT(*)>0 , 'true' , 'false' ) FROM files
+        WHERE files.content_id_have_file= contents.content_id) AS file_existence
+        FROM contents
+        WHERE submit_date BETWEEN #{start} AND #{end}
+        <if test="keyword != null and !keyword.isEmpty and keyword != 'null'">
+             AND title LIKE '%'||#{keyword}||'%'
+        </if>
+        <if test="contentCategoryId != null">
+             AND content_category_id=#{contentCategoryId}
+        </if>
+         LIMIT #{page},10;
+    </select>
+    <select id="queriedTotal" resultType="java.lang.Integer" parameterType="condition">
+        SELECT IFNULL(COUNT(*),0) AS count
+        FROM contents
+        WHERE submit_date BETWEEN #{start} AND #{end}
+        <if test="keyword != null and !keyword.isEmpty and keyword != 'null'">
+            AND title LIKE '%'||#{keyword}||'%'
+        </if>
+        <if test="contentCategoryId != null">
+            AND content_category_id=#{contentCategoryId}
+        </if>
+        ;
+    </select>
+    <select id="getPasswordByContentId" parameterMap="java.lang.Integer" resultType="java.lang.String">
+        SELECT password
+        FROM contents
+        WHERE content_id=#{id}
+    </select>
+    <update id="updateViewCount">
+        UPDATE contents
+        SET view_count=#{viewCount}
+        WHERE content_id=#{contentId}
+    </update>
+    <select id="selectForView" parameterType="java.lang.Integer" resultType="viewContent">
+        SELECT content_id,content_category_id,password,
+               view_count,content,nickname,title,
+               submit_date,update_date
+        FROM contents
+        WHERE content_id=#{id}
+    </select>
+</mapper>

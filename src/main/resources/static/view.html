@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>게시판 - 보기</title>
+</head>
+<body>
+<!--게시글 구간 시작-->
+<div id="data_center_detail" th:object="${content}">
+    <h2>게시판 - 보기</h2>
+    <!--내용 구간 시작-->
+    <div>
+        <p th:text="${content.getNickname()}"></p>
+        <div>
+            <span th:text="|등록일시: ${content.getSubmitDate()}|">-</span>
+            <p th:text="|수정일시: ${content.getUpdateDate()}|">-</p>
+        </div>
+    </div>
+    <div>
+        <div>
+            <h5 th:text="${content.getContentCategoryId()}"></h5>
+            <h5 th:text="${content.getTitle()}"></h5>
+            <p>조회수 : [[${content.getViewCount()}]]</p>
+        </div>
+        <div th:text="${content.getContent()}"></div>
+        <!--내용 구간 끝-->
+        <!--파일 구간 시작-->
+        <div th:object="${files}">
+            <div th:if="${files != null}" th:each="file : ${files}">
+                <form method="post" action="/download">
+                    <label th:text="다운로드">
+                        <input type="hidden" name="" th:value="${file.getFilePath()}"/>
+                        <input th:name="file" type="submit" th:value="${file.getFileName()}"/>
+                    </label>
+                </form>
+            </div>
+        </div>
+        <!--파일 구간 끝-->
+        <!--댓글 구간 시작-->
+        <div id="CommentBlock" th:object="${comments}">
+            <div th:if="${comments != null && !comments.isEmpty()}" th:each="comment :${comments}">
+                <div class="commentBlock">
+                    <div>
+                        <p th:text="${comment.getCommentUser()}"></p>
+                        <p th:text="${comment.getCommentedDate()}"></p>
+                    </div>
+                    <p th:text="${comment.getComment()}"></p>
+                </div>
+            </div>
+            <div>
+                <form method="post" action="/comment">
+                    <input type="hidden" name="commentedContentId" th:value="${content.getContentId()}"/>
+                    <label><input name="commentNickname" type="text"/></label>
+                    <label><input name="comment" type="text" minlength="1" placeholder="댓글을 입력해 주세요"/></label>
+                    <input type="submit" value="등록"/>
+                </form>
+                <th:block th:object="${commentError}" th:if="${commentError != null}">
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        let error = [[${commentError}]];
+                        alert(error);//댓글 달 때 문제가 생기면 보내는 값을 alert 창으로 표시한다.
+                        /*]]>*/
+                    </script>
+                </th:block>
+            </div>
+        </div>
+        <!--댓글 구간 끝-->
+    </div>
+    <th:block th:object="${error}" th:if="${error != null && error.getStatus() == 400}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            let err = [[${error.errorMessage()}]];// /view 경로로 controller 에 갔지만 문제가 생겼을 때 존재한다.
+            alert(err);
+            /*]]>*/
+        </script>
+    </th:block>
+    <!--삭제 버튼을 눌렀을 경우 보이게 되며 삭제를 위한 비밀번호 인증을 진행한다.-->
+    <div id="deleteDiv" th:replace="delete.html :: #deleteDiv"></div>
+    <div>
+        <span>
+            <button type="button" onclick="goBack('/index.html')">목록</button>
+            <button type="button" onclick="goBack('/modify.html')">수정</button>
+            <!--deleteDiv 요소를 보이게 만들어준다.-->
+            <button type="button" onclick="changeDisplay('block')">삭제</button>
+        </span>
+    </div>
+</div>
+<!--게시글 구간 끝-->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function goBack( where ){
+        let url = window.location.href;
+        if(url.includes("?") && url.includes("=")){
+            let query = url.split("?")[1];
+            return location.href = where + "?" + query;
+        } else{
+            return location.href = where;
+        }
+    }
+    // 삭제 기능을 제공하는 delete.html 의 fragment 인 #deleteDiv의 display 속성을 바꾸는데 사용된다.
+    function changeDisplay( how ){
+        let me = document.getElementById("deleteDiv");
+        me.style.display = how; // ex) how = "none"; style="display:none"
+    }
+    /*]]>*/
+</script>
+</body>
+</html>

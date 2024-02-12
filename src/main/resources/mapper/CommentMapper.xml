@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.CommentMapper">
+    <insert id="insertComment" parameterType="com.study.connection.entity.CommentEntity"
+            useGeneratedKeys="true">
+        INSERT INTO comments(comment_id , comment_user , comment , commented_content_id)
+        VALUES(#{commentId} , #{commentUser} , #{comment} , #{commentedContentId})
+    </insert>
+    <select id="selectComments" parameterType="java.lang.Integer" resultType="commentDto">
+        SELECT comment_user , comment , commented_content_id
+        FROM comments
+        WHERE commented_content_id=#{id}
+    </select>
+</mapper>

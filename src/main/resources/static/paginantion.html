@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>pagination</title>
+</head>
+<body>
+<div th:fragment="pagination" th:object="${page}">
+    <!--맨 앞으로 가는 버튼 시작-->
+    <th:block>
+        <span th:if="${total != null}">
+            <button type="button" class="toFirst" onclick="turnPage(1)">맨 앞으로</button>
+        </span>
+    </th:block>
+    <!--맨 앞으로 가는 버튼 끝-->
+    <!--앞으로 가는 버튼 시작-->
+    <th:block>
+        <button type="button" class="toBefore" th:onclick="turnPage(${page - 1})">앞으로</button>
+    </th:block>
+    <!--앞으로 가는 버튼 시작 끝-->
+    <!--페이지 버튼 시작-->
+    <th:block>
+        <span th:if="${total != null}" th:each="num : ${#numbers.sequence(1 , total)}">
+            <button th:class="${page != null && page == numStat.count ? 'pageButton active' : 'pageButton'}"
+                    type="button" th:onclick="turnPage(${numStat.count})" th:text="${numStat.count}"></button>
+        </span>
+        <span th:if="${total == null}">
+            <button class="pageButton" type="button" disabled>1</button>
+        </span>
+    </th:block>
+    <!--페이지 버튼 끝-->
+    <!--뒤로 가는 버튼 시작-->
+    <th:block>
+        <span th:if="${total != null && page != total}">
+            <button type="button" class="toNext" th:onclick="turnPage(${page + 1})">뒤로</button>
+        </span>
+    </th:block>
+    <!--뒤로 가는 버튼 끝-->
+    <!--맨 뒤로 가는 버튼 시작-->
+    <th:block>
+        <span th:if="${total != null }">
+            <button type="button" class="toLast" th:onclick="turnPage(${total})">맨 뒤로</button>
+        </span>
+    </th:block>
+    <!--맨 뒤로 가는 버튼 끝-->
+</div>
+<script th:inline="javascript">
+    //페이지 넘길 때 쿼리스트링 여부 확인한 뒤에 /index.html 뒤에 page 쿼리를 붙여 이동시킨다.
+    function turnPage(num) {
+        let url = window.location.href;
+        if (url.includes("?") && url.includes("=")) { // 쿼리스트링이 존재할 때
+            let query = url.split("?")[1];
+            return location.href = "/index.html" + query + "&page=" + num;
+        } else {
+            return location.href = "/index.html?page=" + num;
+        }
+    }
+</script>
+</body>
+</html>
