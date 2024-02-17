@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import static com.study.connection.utils.CheckValid.checking;
 
+/**
+ * 데이터베이스 비밀번호와 사용자가 입력한 비밀번호가 동일한지 여부 확인하기 위해 ajax 을 보냈을 때 사용.
+ */
 @Controller
 public class CheckPasswordController {
     /**

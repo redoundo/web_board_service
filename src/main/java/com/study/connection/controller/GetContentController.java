@@ -4,6 +4,8 @@ import com.study.connection.dto.*;
 import com.study.connection.service.CategoryService;
 import com.study.connection.service.ContentService;
 import com.study.connection.utils.QueryStringMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static com.study.connection.utils.CheckValid.checking;
 
@@ -25,6 +28,7 @@ import static com.study.connection.utils.CheckValid.checking;
 public class GetContentController {
     @Autowired
     private ContentService service;
+    private final Logger logger = LoggerFactory.getLogger(GetContentController.class);
     /**
      * 처음 렌더 후의 페이지 , 검색 후 결과 페이지 , 다른 곳에서 쿼리스트링을 포함한 채로 이동했을 때 호출됨.
      * @param model index.html
@@ -32,7 +36,7 @@ public class GetContentController {
      * @return index.html
      */
     @RequestMapping(value = { "/", "" , "/index.html"} , method = RequestMethod.GET)
-    public String getContentsWithTotal(Model model , @ModelAttribute("condition") ConditionDto condition){
+    public String getContentsWithTotal(Model model , @ModelAttribute  ConditionDto condition){
 
         Date end = Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d")));
         Date start = Date.valueOf(LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("y-M-d")));
@@ -45,7 +49,6 @@ public class GetContentController {
             model.addAttribute("total" , all.getTotal());
             model.addAttribute("contents" , all.getContents());
             model.addAttribute("categories" , all.getCategories());
-
 
         } catch (Exception e){
             String uri = "/";//리다이렉트 할 위치
@@ -61,13 +64,13 @@ public class GetContentController {
                     .build();
             model.addAttribute("error" , error);
         }
-
         model.addAttribute("start" , condition.getStart());
         model.addAttribute("end" , condition.getEnd());
         model.addAttribute("keyword" , condition.getKeyword());
         model.addAttribute("contentCategoryId" , condition.getContentCategoryId());
         model.addAttribute("page" , condition.getPage());
 
+        logger.debug("Model :    {}" , model);
         return "index";
     }
     /**
@@ -77,7 +80,7 @@ public class GetContentController {
      * @param condition 쿼리스트링
      * @return view.html
      */
-    @RequestMapping(value = "/view" , method = RequestMethod.GET)
+    @RequestMapping(value = {"/view" , "/view.html"} , method = RequestMethod.GET)
     public String getViewContent(Model model , @RequestParam("contentId") String id
             , @ModelAttribute ConditionDto condition){
         try{

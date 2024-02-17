@@ -3,6 +3,8 @@ package com.study.connection.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.sql.Date;
+
 /**
  * comments 테이블 엔티티
  */
@@ -16,13 +18,15 @@ import lombok.*;
 public class CommentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id" , nullable = false)
+    @Column(name = "commentId" , nullable = false)
     private Integer commentId;
-    @Column(name = "commented_content_id" , nullable = false)
+    @Column(name = "commentedContentId" , nullable = false)
     private Integer commentedContentId;
-    @Column(name = "comment_user" , nullable = false)
+    @Column(name = "commentUser" , nullable = false)
     private String commentUser;
     @Column(name = "comment" , nullable = false)
     private String comment;
+    @Column(name= "commentedDate" , nullable = false)
+    private Date commentedDate;
 }
 

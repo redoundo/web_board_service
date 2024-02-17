@@ -1,13 +1,15 @@
 package com.study.connection.mapper;
 
 import com.study.connection.dto.*;
-import com.study.connection.entity.InsertContentEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * contents 테이블 관련 mapper
+ */
 @Mapper
 @Repository
 public interface ContentMapper {
@@ -15,7 +17,7 @@ public interface ContentMapper {
      * content 내용 삽입
      * @param entity
      */
-    void insertContent(InsertContentEntity entity);
+    void insertContent(InsertContent  entity);
     /**
      * content_id = 매개변수 id 인 content 를 삭제
      * 해당 content_id 를 가진 files , comments 들을 삭제하는 과정도 포함해야한다.
@@ -67,4 +69,5 @@ public interface ContentMapper {
      * @return password 를 포함한 contents 의 내용.
      */
     ViewContentDto selectForView(Integer id);
+    Integer getContentIdByInserted(InsertContent entity);
 }

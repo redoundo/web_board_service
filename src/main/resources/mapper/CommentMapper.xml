@@ -4,12 +4,12 @@
 <mapper namespace="com.study.connection.mapper.CommentMapper">
     <insert id="insertComment" parameterType="com.study.connection.entity.CommentEntity"
             useGeneratedKeys="true">
-        INSERT INTO comments(comment_id , comment_user , comment , commented_content_id)
-        VALUES(#{commentId} , #{commentUser} , #{comment} , #{commentedContentId})
+        INSERT INTO comments(commentId , commentUser , comment , commentedContentId , commentedDate)
+        VALUES(#{commentId} , #{commentUser} , #{comment} , #{commentedContentId} , #{commentedDate})
     </insert>
     <select id="selectComments" parameterType="java.lang.Integer" resultType="commentDto">
-        SELECT comment_user , comment , commented_content_id
+        SELECT commentUser , comment , commentedContentId
         FROM comments
-        WHERE commented_content_id=#{id}
+        WHERE commentedContentId=#{id}
     </select>
 </mapper>

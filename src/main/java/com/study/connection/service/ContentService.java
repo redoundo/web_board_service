@@ -2,15 +2,17 @@ package com.study.connection.service;
 
 import com.study.connection.dto.*;
 import com.study.connection.entity.FileEntity;
-import com.study.connection.entity.InsertContentEntity;
 import com.study.connection.mapper.ContentMapper;
 import com.study.connection.utils.Encrypt;
+import com.study.connection.utils.LoadFiles;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 import static com.study.connection.utils.CheckValid.checking;
 
@@ -22,22 +24,34 @@ import static com.study.connection.utils.CheckValid.checking;
 public class ContentService {
     @Autowired
     private ContentMapper mapper;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private FileService fileService;
+    @Autowired
+    private CommentService commentService;
 
+    private final Logger logger = LoggerFactory.getLogger(ContentService.class);
     /**
-     * content 와 file 을 저장한다. fileService 에서 파일의 존재 여부를 확인해주므로 분가 없이 바로 접어넣는다.
+     * content 와 file 을 저장한다.
      * @param entity 저장하려는 내용.
-     * @param files 내용과 함께 저장하려고 하는 파일들.
+     * @param fileDto 내용과 함께 저장하려고 하는 파일들.
      * @throws Exception
      */
-    public void insertContent(InsertContentEntity entity , List<FileEntity> files) throws Exception {
+    public void insertContent(InsertContent entity , @Nullable FilePartDto fileDto) throws Exception {
         try{
             if(checking.checkClassMembers(entity)){
                 this.mapper.insertContent(entity);
-                new FileService().insertFiles(files);
+                Integer contentId = this.mapper.getContentIdByInserted(entity);
+                if(fileDto != null && (fileDto.getFile3() != null || fileDto.getFile1() != null || fileDto.getFile2() != null)){
+                    List<FileEntity> fileEntities = new LoadFiles().upload(fileDto , contentId.toString());
+                    this.fileService.insertFiles(fileEntities);
+                }
             } else{
                 throw new Exception("필수 내용 중 누락된 부분이 있습니다.");
             }
         }catch (Exception e){
+            e.getStackTrace();
             throw new Exception(e);
         }
     }
@@ -84,7 +98,7 @@ public class ContentService {
             if(checking.checkString(id)){
                 ViewContentDto content = this.mapper.selectForView(Integer.parseInt(id));
                 List<FileDto> files = new FileService().getFiles(id);
-                List<CommentDto> comments = new CommentService().getComments(id);
+                List<CommentDto> comments = this.commentService.getComments(id);
                 details = ContentFullDetails.builder()
                         .comments(comments)
                         .files(files)
@@ -110,8 +124,7 @@ public class ContentService {
         try{
             List<SelectContentDto> contents = this.mapper.selectQueriedContents(condition);
             Integer total = this.mapper.queriedTotal(condition);
-            Map<Integer , String> categories = new CategoryService().allCategories();
-
+            List<CategoryDto> categories = this.categoryService.allCategories();
             queried = ContentTotalCategory.builder()
                     .contents(contents)
                     .total(total)
@@ -119,6 +132,7 @@ public class ContentService {
                     .build();
 
         }catch (Exception e){
+            e.getStackTrace();
             throw new Exception(e);
         }
         return queried;
@@ -137,7 +151,7 @@ public class ContentService {
                 String original = this.mapper.getPasswordByContentId(intId);//db 에 저장된 비밀번호를 가져온다.
                 //저장된 비밀번호와 매개변수 password 가 동일한지 확인한다.
                 if(new Encrypt().checkEncrypt(password , original)){
-                    new FileService().deleteByContentId(intId);
+                    this.fileService.deleteByContentId(intId);
 
                     this.mapper.deleteContent(intId);//contentId 값의 내용을 삭제한다.
                 } else{
@@ -185,7 +199,7 @@ public class ContentService {
         try{
             if(checking.checkString(id)){
                ViewContentDto view = this.mapper.selectForView(Integer.parseInt(id));
-               List<FileDto> files = new FileService().getFiles(id);
+               List<FileDto> files = this.fileService.getFiles(id);
                dto = ContentFullDetails.builder()
                        .files(files)
                        .content(view)

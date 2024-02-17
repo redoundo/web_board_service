@@ -3,96 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <title>게시판 - 등록</title>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <div id="writing">
-        <h2>게시판 - 등록</h2>
-        <div>
-            <form id="writeForm">
-                <!--카테고리 처리 과정 시작-->
-                <div  th:object="${categories}" th:if="${categories != null}">
-                    <span>
-                        <label for="categorySelect">카테고리*</label>
-                    </span>
-                    <span>
-                        <!--카테고리 값이 있을때 처리 과정 시작-->
-                        <select id="categorySelect" name="category"  th:if="${categories != null}"
-                            th:each="category : ${categories.keySet().toArray()}">
-                            <option value=null>카테고리 선택</option>
-                            <option th:value="${category}" th:text="${categories.get(category)}"/>
-                        </select>
-                        <!--카테고리 값이 있을때 처리 과정 끝-->
-                    </span>
-                </div>
-                <div th:object="${categories}" th:if="${categories == null}">
-                    <!--카테고리 값 없을 시 처리 과정 시작-->
-                    <span>
-                        <label for="nullCategories">카테고리*</label>
-                    </span>
-                    <span>
-                        <select id="nullCategories" name="category">
-                            <option value=null>카테고리 선택</option>
-                        </select>
-                    </span>
-                    <!--카테고리 값없을 시 처리 과정 끝-->
-                </div>
-                <!--카테고리 처리 과정 끝-->
-                <div>
-                    <span><label for="writeUser">작성자*</label></span>
-                    <span><input type="text" id="writeUser" name="nickname" required minlength="2" maxlength="20"/></span>
-                </div>
-                <div>
-                    <span><label for="setPassword">비밀번호*</label></span>
-                    <span>
-                        <input type="password" id="setPassword" name="password" required minlength="4" maxlength="18" placeholder="비밀번호"/>
-                        <label><input type="password" id="checkPassword" required minlength="4" maxlength="18" placeholder="비밀번호 확인"/></label>
-                    </span>
-                </div>
-                <div>
-                    <span><label for="setTitle">제목*</label></span>
-                    <span><input type="text" id="setTitle" required minlength="3" maxlength="70"/></span>
-                </div>
-                <div>
-                    <span><label for="setContent">내용*</label></span>
-                    <span><input id="setContent" type="text" required minlength="5" maxlength="800"/></span>
-                </div>
-                <div>
-                    <span>파일 첨부</span>
-                    <span>
+<div id="writing">
+    <h2>게시판 - 등록</h2>
+    <div>
+        <form id="writeForm">
+            <!--카테고리 처리 과정 시작-->
+            <div th:if="${categories != null}">
+                <span>
+                    <label for="categorySelect">카테고리*</label>
+                </span>
+                <span>
+                    <!--카테고리 값이 있을때 처리 과정 시작-->
+                    <select id="categorySelect" name="contentCategoryId" th:if="${ categories.size() > 0}">
+                        <option value=null>카테고리 선택</option>
+                        <option th:each="category : ${categories}" th:value="${category.getCategoryId()}"
+                            th:text="${category.getCategoryName()}"/>
+                    </select>
+                    <!--카테고리 값이 있을때 처리 과정 끝-->
+                </span>
+            </div>
+            <div th:if="${categories == null && categories.size()>0}">
+                <!--카테고리 값 없을 시 처리 과정 시작-->
+                <span>
+                    <label for="nullCategories">카테고리*</label>
+                </span>
+                <span>
+                    <select id="nullCategories" name="category">
+                        <option value=null>카테고리 선택</option>
+                    </select>
+                </span>
+                <!--카테고리 값없을 시 처리 과정 끝-->
+            </div>
+            <!--카테고리 처리 과정 끝-->
+            <div>
+                <span><label for="writeUser">작성자*</label></span>
+                <span><input type="text" id="writeUser" name="nickname" required minlength="2" maxlength="20"/></span>
+            </div>
+            <div>
+                <span><label for="setPassword">비밀번호*</label></span>
+                <span>
+                        <input type="password" id="setPassword" name="password" required minlength="4" maxlength="18"
+                               placeholder="비밀번호"/>
+                        <label><input type="password" id="checkPassword" required minlength="4" maxlength="18"
+                                      placeholder="비밀번호 확인"/></label>
+                </span>
+            </div>
+            <div>
+                <span><label for="setTitle">제목*</label></span>
+                <span><input type="text" name="title" id="setTitle" required minlength="3" maxlength="70"/></span>
+            </div>
+            <div>
+                <span><label for="setContent">내용*</label></span>
+                <span><input id="setContent" name="content" type="text" required minlength="5" maxlength="800"/></span>
+            </div>
+            <div>
+                <span>파일 첨부</span>
+                <span>
                         <input type="file" name="file1"/>
                         <input type="file" name="file2"/>
                         <input type="file" name="file3"/>
                     </span>
-                </div>
-            </form>
-            <div>
-                <button type="button" onclick="goBack('/index.html')">취소</button>
-                <input type="submit" form="writeForm" onsubmit="isPasswordSame()" formaction="post" value="저장"/>
             </div>
+            <input type="hidden" id="currentUrl" name="currentUrl"/>
+        </form>
+        <div>
+            <button type="button" onclick="goBack('/index.html')">취소</button>
+            <input type="submit" form="writeForm" onsubmit="isPasswordSame()" formenctype="multipart/form-data"
+                   formmethod="post" formaction="insertContent" value="저장"/>
         </div>
+        <th:block th:if="${error != null && error.getStatus() == 400}">
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                let err = [[${error.errorMessage}]];
+                let uri = [[${error.redirectUri}]];
+                alert(err);
+                /*]]>*/
+            </script>
+        </th:block>
     </div>
+</div>
 <script th:inline="javascript">
-    function goBack( where ){
+    function goBack(where) {
         let url = window.location.href;
-        if(url.includes("?") && url.includes("=")){
+        if (url.includes("?") && url.includes("=")) {
             let query = url.split("?")[1];
             return location.href = where + "?" + query;
-        } else{
+        } else {
             return location.href = where;
         }
     }
-    function isPasswordSame(){
+    function isPasswordSame() {
         let original = $("#setPassword").val();
         let needCheck = $("#checkPassword").val();
         let same = false;
-        if(original !== needCheck){
+        if (original !== needCheck) {
             alert("비밀번호가 동일하지 않습니다.");
         } else {
             same = true;
         }
         return same;
     }
+    $(function(){
+        document.getElementById("currentUrl").setAttribute("value", window.location.href);
+    }).off();
 </script>
 </body>
 </html>

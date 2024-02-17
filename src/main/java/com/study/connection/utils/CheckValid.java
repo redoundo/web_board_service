@@ -11,12 +11,12 @@ public class CheckValid {
         return needCheck != null && !needCheck.isEmpty() && !needCheck.equals("null");
     }
     public boolean checkClassMembers(Object object) throws IllegalAccessException {
-        boolean valid = false;
+        boolean valid = true;
         if(object != null){
             for (Field field: object.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
                 if(field.get(object) == null){
-                    valid = true;
+                    valid = false;
                 }
             }
         }

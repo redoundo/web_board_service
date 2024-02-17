@@ -20,11 +20,11 @@ import java.sql.Date;
 public class InsertContentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "content_id" , nullable = false)
+    @Column(name = "contentId")
     private Integer contentId;
-    @Column(name = "content_category_id" , nullable = false)
+    @Column(name = "contentCategoryId" , nullable = false)
     private Integer contentCategoryId;
-    @Column(name = "view_count" , nullable = false)
+    @Column(name = "viewCount" , nullable = false)
     private Integer viewCount;
     @Column(name = "password" , nullable = false)
     private String password;
@@ -34,7 +34,7 @@ public class InsertContentEntity {
     private String title;
     @Column(name = "nickname" , nullable = false)
     private String nickname;
-    @Column(name = "submit_date" , nullable = false)
+    @Column(name = "submitDate" , nullable = false)
     private Date submitDate;
 }
 

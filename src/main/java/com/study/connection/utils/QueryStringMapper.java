@@ -5,8 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.study.connection.utils.CheckValid.checking;
 
 /**
  *
@@ -46,5 +49,28 @@ public class QueryStringMapper {
         if(param.get("contentCategoryId") != null){redirect.addAttribute("contentCategoryId" , param.get("contentCategoryId"));}
 
         return redirect;
+    }
+    public Map<String ,Object> toQueryStringMap(String url){
+        Map<String , Object> map = new HashMap<>();
+        if(checking.checkString(url)){
+            if(url.contains("?") && url.contains("=")){
+                String query = url.split("\\?" , 1)[1];
+                if(url.contains("&")){
+                    //쿼리 여러개.
+                    for (String keyValue : query.split("&")){
+                        map.put(keyValue.split("=" , 1)[0] , keyValue.split("=" , 1)[1]);
+                    }
+                } else {
+                    //1개만 있을 경우.
+                    map.put(query.split("=" , 1)[0] , query.split("=" , 1)[1]);
+                }
+            } else{
+                //?가 없으면 쿼리스트링도 없다는 의미이므로 null 반환.
+                map = null;
+            }
+        } else{
+            map = null;
+        }
+        return map;
     }
 }

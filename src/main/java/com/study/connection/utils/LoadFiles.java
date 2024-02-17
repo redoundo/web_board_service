@@ -2,7 +2,6 @@ package com.study.connection.utils;
 
 import com.study.connection.dto.FilePartDto;
 import com.study.connection.entity.FileEntity;
-import jakarta.servlet.http.Part;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * 파일 업로드 기능 제공.
  */
 public class LoadFiles {
     /**

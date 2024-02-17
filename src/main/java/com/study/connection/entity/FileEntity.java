@@ -15,18 +15,18 @@ import lombok.*;
 public class FileEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_id" , nullable = false)
+    @Column(name = "fileId" , nullable = false)
     private Integer fileId;
-    @Column(name = "content_id_have_file" , nullable = false)
+    @Column(name = "contentIdHaveFile" , nullable = false)
     private Integer contentIdHaveFile;
-    @Column(name = "file_volume" , nullable = false)
+    @Column(name = "fileVolume" , nullable = false)
     private Integer fileVolume;
-    @Column(name = "file_name" , nullable = false)
+    @Column(name = "fileName" , nullable = false)
     private String fileName;
-    @Column(name = "file_original_name" , nullable = false)
+    @Column(name = "fileOriginalName" , nullable = false)
     private String fileOriginalName;
-    @Column(name = "file_path" , nullable = false)
+    @Column(name = "filePath" , nullable = false)
     private String filePath;
-    @Column(name = "file_extension" , nullable = false)
+    @Column(name = "fileExtension" , nullable = false)
     private String fileExtension;
 }

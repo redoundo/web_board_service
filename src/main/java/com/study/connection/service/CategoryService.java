@@ -1,10 +1,11 @@
 package com.study.connection.service;
 
+import com.study.connection.dto.CategoryDto;
 import com.study.connection.mapper.CategoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import java.util.List;
 
 import static com.study.connection.utils.CheckValid.checking;
 
@@ -20,14 +21,14 @@ public class CategoryService {
      * @return 전체 카테고리를 반환한다.
      * @throws Exception
      */
-    public Map<Integer , String> allCategories () throws Exception {
-        Map<Integer , String> map;
+    public List<CategoryDto> allCategories () throws Exception {
+        List<CategoryDto> list;
         try{
-            map = this.mapper.selectCategory();
+            list = this.mapper.selectCategory();
         }catch (Exception e){
             throw new Exception(e);
         }
-        return map;
+        return list;
     }
 
     /**

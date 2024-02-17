@@ -16,10 +16,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 /**
- * view.html 에 진입했을 때 발생할 수 있는 문제를 다룬다.
+ * view.html 에서 comment 등록 , 파일 다운로드 기능 제공한다.
  */
 @Controller
 @MultipartConfig
@@ -37,6 +40,7 @@ public class CommentFileController {
                     .comment(comment.getComment())
                     .commentedContentId(comment.getCommentedContentId())
                     .commentUser(comment.getCommentUser())
+                    .commentedDate(Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d"))))
                     .build();
             new CommentService().insertComment(entity);
         } catch (Exception e){
@@ -75,7 +79,7 @@ public class CommentFileController {
                 output.flush();
             }
         }catch (Exception e){
-
+            e.getStackTrace();
         }
 
     }

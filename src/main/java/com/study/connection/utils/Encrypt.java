@@ -1,5 +1,5 @@
 package com.study.connection.utils;
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -8,9 +8,14 @@ import java.util.Objects;
 
 import static com.study.connection.utils.CheckValid.checking;
 
-
+/**
+ * 단방향 암호화를 위한 기능 제공.
+ */
 public class Encrypt {
-    public String Encryption(@NonNull String password) throws NoSuchAlgorithmException {
+    /**
+     * 비밀번호를 넣으면 단방향 암호화된 비밀번호가 나옴.
+     */
+    public String Encryption(@NotNull String password) throws NoSuchAlgorithmException {
         byte[] plainText;
         byte[] hashValue;
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
@@ -18,6 +23,14 @@ public class Encrypt {
         hashValue = messageDigest.digest(plainText);
         return new String(Base64.getEncoder().encode(hashValue));
     }
+
+    /**
+     * 사용자가 입력한 비밀번호와 db 에 있는 비밀번호가 동일한지 여부 반환.
+     * @param password
+     * @param original
+     * @return
+     * @throws Exception
+     */
     public Boolean checkEncrypt (String password , String original) throws Exception {
         boolean same = false;
         try{

@@ -7,7 +7,7 @@
         <typeAlias type="com.study.connection.dto.SelectContentDto" alias="selectContentDto"/>
         <typeAlias type="com.study.connection.dto.CommentDto" alias="commentDto"/>
         <typeAlias type="com.study.connection.dto.FileDto" alias="FileDto"/>
-        <typeAlias type="com.study.connection.entity.InsertContentEntity" alias="InsertContent"/>
         <typeAlias type="com.study.connection.dto.ViewContentDto" alias="viewContent"/>
+        <typeAlias type="com.study.connection.dto.CategoryDto" alias="categoryDto"/>
     </typeAliases>
 </configuration>
