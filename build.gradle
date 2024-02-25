@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'war'
+<<<<<<< HEAD
     id 'org.springframework.boot' version '3.2.2'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -9,6 +10,10 @@ configurations {
         exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
     }
 }
+=======
+}
+
+>>>>>>> bff75d808050ebb9703d86bff481b4d361fca141
 group 'com.study'
 version '1.0-SNAPSHOT'
 
@@ -21,6 +26,7 @@ ext {
 }
 
 java {
+<<<<<<< HEAD
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
@@ -72,6 +78,39 @@ dependencies {
     implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:11.0.0-M16'
 }
 
+=======
+    sourceCompatibility = '11'
+    targetCompatibility = '11'
+
+}
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
+    compileOnly 'jakarta.servlet.jsp:jakarta.servlet.jsp-api:4.0.0-M1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.30'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    implementation 'org.mybatis:mybatis:3.5.15'
+    implementation 'commons-fileupload:commons-fileupload:1.5'
+    implementation 'commons-io:commons-io:2.15.1'
+    compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api:3.0.0'
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+    implementation 'jakarta.servlet:jakarta.servlet-api'
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
+}
+>>>>>>> bff75d808050ebb9703d86bff481b4d361fca141
 test {
     useJUnitPlatform()
 }
