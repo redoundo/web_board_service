@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.FileMapper">
+    <insert id="insertFile">
+        INSERT INTO files(fileName , fileOriginalName , filePath ,
+        contentIdHaveFile , fileVolume , fileExtension)
+        VALUES
+        <foreach collection="entities" nullable="false" item="item" open="(" close=")" separator=",">
+            #{item.fileName} , #{item.fileOriginalName} , #{item.filePath} ,
+            #{item.contentIdHaveFile} , #{item.fileVolume} ,#{item.fileExtension}
+        </foreach>
+    </insert>
+    <delete id="deleteFilesByContentId" parameterType="java.lang.Integer">
+        DELETE FROM files
+        WHERE contentIdHaveFile=#{id};
+    </delete>
+    <select id="selectFiles" parameterType="java.lang.Integer" resultType="FileDto">
+        SELECT fileName,fileOriginalName,filePath,fileId
+        FROM files
+        WHERE contentIdHaveFile=#{id}
+    </select>
+    <delete id="deleteByFileId" parameterType="java.lang.Integer">
+        DELETE
+        FROM files
+        WHERE fileId=#{id}
+    </delete>
+    <select id="getFileIds" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT fileId
+        FROM files
+        WHERE contentIdHaveFile=#{id}
+    </select>
+</mapper>

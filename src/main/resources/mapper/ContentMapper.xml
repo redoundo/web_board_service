@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.ContentMapper">
+    <insert id="insertContent" parameterType="InsertContent" useGeneratedKeys="true"
+            keyColumn="contentId" keyProperty="contentId">
+        INSERT INTO contents (contentCategoryId , viewCount ,title , content , password , nickname , submitDate)
+        VALUES (#{contentCategoryId} , #{viewCount} ,#{title} , #{content} , #{password} , #{nickname} , #{submitDate})
+    </insert>
+    <delete id="deleteContent" parameterType="java.lang.Integer">
+        DELETE FROM contents
+        WHERE contentId=#{id}
+    </delete>
+    <update id="updateContent">
+        UPDATE contents SET title=#{entity.title},content=#{entity.content},
+                            nickname=#{entity.nickname},updateDate=#{entity.updateDate}
+        WHERE contentId=#{id}
+    </update>
+    <select id="selectContent" parameterType="java.lang.Integer" resultType="content">
+        SELECT contentId,contentCategoryId,password,
+               viewCount,content,nickname,title,
+               submitDate,updateDate
+        FROM contents
+        WHERE contentId=#{id}
+    </select>
+
+    <sql id="whereQuery">
+        WHERE submitDate BETWEEN #{start} AND #{end}
+        <if test="keyword != null and !keyword.isEmpty and keyword != 'null'">
+            AND title LIKE '%'||#{keyword}||'%'
+        </if>
+        <if test="contentCategoryId != null">
+            AND contentCategoryId=#{contentCategoryId}
+        </if>
+    </sql>
+    <select id="selectQueriedContents" resultType="selectContentDto" parameterType="condition" >
+        SELECT contentId,contentCategoryId,
+        viewCount,content,nickname,title,
+        submitDate,updateDate,
+        (SELECT IF ( COUNT(*)>0 , true , false ) FROM files
+        WHERE files.contentIdHaveFile= contents.contentId) AS fileExistence
+        FROM contents
+        <include refid="whereQuery"></include>
+        LIMIT #{page},10;
+    </select>
+    <select id="queriedTotal" resultType="java.lang.Integer" parameterType="condition">
+        SELECT COUNT(*) AS count
+        FROM contents
+        <include refid="whereQuery"></include>
+
+    </select>
+    <select id="getPasswordByContentId" parameterType="java.lang.Integer" resultType="java.lang.String">
+        SELECT password
+        FROM contents
+        WHERE contentId=#{id}
+    </select>
+    <update id="updateViewCount">
+        UPDATE contents
+        SET viewCount=#{viewCount}
+        WHERE contentId=#{contentId}
+    </update>
+    <select id="getContentId" resultType="java.lang.Integer" parameterType="forGetContentId">
+        SELECT contentId
+        FROM contents
+        WHERE title=#{title} AND password=#{password} AND contentCategoryId=#{contentCategoryId}
+    </select>
+</mapper>

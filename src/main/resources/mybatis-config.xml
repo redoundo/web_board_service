@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <typeAliases>
+        <typeAlias type="com.study.connection.dto.ConditionDto" alias="condition"/>
+        <typeAlias type="com.study.connection.dto.content.SelectContentDto" alias="selectContentDto"/>
+        <typeAlias type="com.study.connection.dto.CommentDto" alias="commentDto"/>
+        <typeAlias type="com.study.connection.dto.file.FileDto" alias="FileDto"/>
+        <typeAlias type="com.study.connection.entity.InsertContentEntity" alias="InsertContent"/>
+        <typeAlias type="com.study.connection.entity.CommentEntity" alias="commentEntity"/>
+        <typeAlias type="com.study.connection.entity.FileEntity" alias="fileEntity"/>
+        <typeAlias type="com.study.connection.dto.CategoryDto" alias="categories"/>
+        <typeAlias type="com.study.connection.dto.ContentDto" alias="content"/>
+        <typeAlias type="com.study.connection.dto.ThingsForGetContentId" alias="forGetContentId"/>
+    </typeAliases>
+</configuration>
