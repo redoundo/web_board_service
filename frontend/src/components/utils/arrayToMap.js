@@ -9,3 +9,11 @@ export function toMap(list){
     }
     return mapped;
 }
+
+export function refValueToMap(refValue){
+    return {
+        page : refValue.get("page") , end : refValue.get("end") ,
+        start : refValue.get("start") , keyword : refValue.get("keyword") ,
+        contentCategoryId : refValue.get("contentCategoryId")
+    };
+}

@@ -2,6 +2,7 @@ package com.study.connection.controller;
 
 import com.study.connection.dto.*;
 import com.study.connection.dto.content.UpdateContentDto;
+import com.study.connection.dto.file.DownloadFileInfo;
 import com.study.connection.dto.file.FilePartDto;
 import com.study.connection.entity.CommentEntity;
 import com.study.connection.error.CustomRuntimeException;
@@ -9,17 +10,21 @@ import com.study.connection.error.ErrorCode;
 import com.study.connection.service.BoardService;
 import com.study.connection.service.InsertService;
 import com.study.connection.utils.LoadFiles;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -31,22 +36,23 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 필요한내용 가져오는 작업
+ * 모든 요청 처리
  */
 @RestController
 @RequiredArgsConstructor
+@MultipartConfig
 public class BoardRestController {
     private final BoardService boardService;
     private final InsertService insertService;
+    private final Logger logger = LoggerFactory.getLogger(BoardRestController.class);
     /**
      *  index.vue 에 필요한 모든 내용 제공.
      * @param condition 사용자가 설정한 검색 조건.
      * @return 검색 조건으로 나온 결과를 반환하는 responseEntity
      */
-    @GetMapping(value = {"/api/index" , "/api" , "/api/"})
+    @GetMapping(value = {"/index" , "" , "/"})
     public ResponseEntity<AllIndexPropsDto> getBoardContents(
             @RequestParam @NotNull Map<String , Object> condition){
-
         Date end = Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d")));
         Date start = Date.valueOf(LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("y-M-d")));
 
@@ -64,13 +70,19 @@ public class BoardRestController {
                 .ok()
                 .body(props);
     }
+    @GetMapping(value = "/notIndex")
+    public ResponseEntity<?> getting(ConditionDto dto){
+        logger.debug("dto : {}" , dto);
+        return ResponseEntity.ok(true);
+    }
+
     /**
      * contentId 로 찾은 내용 반환.
      * 유효성 혹은 다른 runtimeException 들은 advice 클래스에서 다룬다.
      * @param contentId 가져올 내용의 아이디
      * @return content , files , comments 가 담긴 responseEntity 반환.
      */
-    @GetMapping(value = {"/api/view"})
+    @GetMapping(value = {"/view"})
     public ResponseEntity<ViewPropsDto> returnViewProps(
             @NotNull @NotBlank @RequestParam(name="contentId") String contentId){
         ViewPropsDto prop = this.boardService.getViewProps(Integer.parseInt(contentId));
@@ -84,7 +96,7 @@ public class BoardRestController {
      * @param contentId 내용을 가져올 contentId
      * @return 내용을 담은 responseEntity
      */
-    @GetMapping( value = {"/api/view/modify"})
+    @GetMapping( value = {"/view/modify"})
     public ResponseEntity<ModifyPropsDto> getModifyProps(
             @NotNull @NotEmpty @RequestParam("contentId") String contentId){
 
@@ -98,7 +110,7 @@ public class BoardRestController {
      * 게시물을 생성하기 전 카테고리 선택에 필요한 내용 제공.
      * @return 모든 카테고리가 담긴 리스트
      */
-    @GetMapping(value = {"/api/write"})
+    @GetMapping(value = {"/write"})
     public ResponseEntity<List<CategoryDto>> returnAllCategories(){
         List<CategoryDto> categories =  this.boardService.getAllCategories();
         return ResponseEntity
@@ -106,22 +118,32 @@ public class BoardRestController {
                 .body(categories);
     }
 
+    /**
+     * 사용자가 입력한 게시글 내용을 생성하고 해당 게시글의 아이디를 반환한다.
+     * @param prop 새로 생성할 게시글 내용
+     * @return 생성한 게시글의 contentId
+     */
     @PostMapping(value = {"/write/insert"} ,
-            headers = {"Content-Type=application/json" , "Content-Type=multipart/form-data"})
+            headers = "Content-Type=multipart/form-data")
     public ResponseEntity<Integer> insertWriteContent(
-            @NotNull @RequestBody WritePropsNeedInsert prop) {
+            @Valid @RequestBody WritePropsNeedInsert prop) {
+        Integer id = null;
+        try{
+            logger.debug("WritePropsNeedInsert prop :   {}" , prop);
         this.insertService.insertContent(prop);
         ThingsForGetContentId things = ThingsForGetContentId.builder()
                 .title(prop.getContent().getTitle())
                 .contentCategoryId(prop.getContent().getContentCategoryId())
                 .content(prop.getContent().getContent())
                 .build();
-        Integer id = this.boardService.getContentIdByInserted(things);
+        id = this.boardService.getContentIdByInserted(things);
+        } catch (Exception e){
+            logger.debug("ERROR ON BOARD REST CONTROLLER  insertWriteContent :   {}" , e.getMessage());
+        }
         return ResponseEntity
                 .ok()
                 .body(id);
     }
-
     /**
      * 예외가 던져지면 false 를 반환하게끔 진행.
      * @param parts 업로드가 필요한 파일들.
@@ -145,21 +167,17 @@ public class BoardRestController {
     }
 
     /**
-     * view.html 에서 파일 다운로드를 클릭하면 실행됨.
-     * @param path 파일이 업로드된 경로
-     * @param name 파일 이름.
+     * view.vue 에서 파일 다운로드를 클릭하면 실행됨.
      * @return 파일을 다운할 수 있는 inputStream
      */
-    @PostMapping(value = {"/view/download"})
-    public ResponseEntity<InputStreamResource> downloadFile(
-            @NotNull @NotBlank @NotEmpty @RequestParam("filePath")String path ,
-            @NotNull @NotBlank @NotEmpty @RequestParam("fileName") String name){
+    @PostMapping(value = {"/view/download"} ,headers = {"Content-Type=application/json"})
+    public ResponseEntity<InputStreamResource> downloadFile(@NotNull @Valid @RequestBody DownloadFileInfo fileInfo){
 
-        InputStreamResource resource = new LoadFiles().download(path);
+        InputStreamResource resource = new LoadFiles().download(fileInfo.getFilePath());
         HttpHeaders header = new HttpHeaders();//httpHeader 설정.
         header.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         header.set(HttpHeaders.CONTENT_DISPOSITION , "attachment; filename=\"" +
-                URLEncoder.encode(name, StandardCharsets.UTF_8) + "\";");
+                URLEncoder.encode(fileInfo.getFileName(), StandardCharsets.UTF_8) + "\";");
         header.set(HttpHeaders.TRANSFER_ENCODING , "binary");
 
         try {
@@ -175,9 +193,9 @@ public class BoardRestController {
     }
 
     /**
-     *
-     * @param comment
-     * @return
+     * 댓글 내용 생성
+     * @param comment 생성할 댓글 내용
+     * @return 저장 완료 여부 
      */
     @PostMapping(value = {"/view/comment"} ,headers = {"Content-Type=application/json"})
     public ResponseEntity<Boolean> insertViewComment(@NotNull @Valid @RequestBody CommentEntity comment){
@@ -203,12 +221,12 @@ public class BoardRestController {
     /**
      * 사용자의 검색으로 가져와진 db 의 비밀번호와 사용자가 입력한 비밀번호가 동일한지 확인한다.
      * db 의 비밀번호가 위조되었을 가능성이 있지만 그것은 위의 컨트롤러에서 진행한다.
-     * @param arg 검색을 통해 db 에서 가져온 비밀번호 , 사용자가 입력한 비밀번호.
+     * @param password 검색을 통해 db 에서 가져온 비밀번호 , 사용자가 입력한 비밀번호.
      * @return 동일 여부
      */
     @PostMapping(value = {"/view/delete/checkPassword"} ,headers = {"Content-Type=application/json"})
-    public ResponseEntity<Boolean> checkPassword(@NotNull @RequestBody Map<String , String> arg){
-        Boolean same = this.boardService.checkPasswordBeforeDelete(arg.get("password") , arg.get("original"));
+    public ResponseEntity<Boolean> checkPassword(@NotNull @RequestBody CheckPassword password){
+        Boolean same = this.boardService.checkPasswordBeforeDelete(password.getPassword() , password.getOriginal());
         return ResponseEntity
                 .ok()
                 .body(same);

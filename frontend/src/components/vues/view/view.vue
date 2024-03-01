@@ -8,7 +8,7 @@ import {dateThatCanChangeYear} from "/src/components/utils/dateFunction.js";
 import router from "../../js/router.js";
 
 onBeforeMount(()=>{viewAxios()})
-
+const url = "http://localhost:8080"
 let content = ref({});
 let categoryName = ref(null);
 let files = ref([]);
@@ -21,7 +21,7 @@ async function viewAxios(){
   const params = router.currentRoute.value.query;
   console.log(params["contentId"])
   if(params["contentId"] !== null){
-    await axios.get("http://localhost:8080/view?contentId=" + params["contentId"])
+    await axios.get(url + "/view?contentId=" + params["contentId"])
         .then(value => {
           console.log(value.data);
           if(value.data !== null && value.data !== undefined){
@@ -36,9 +36,10 @@ async function viewAxios(){
 }
 
 function goWhere(where){
-  let param = {...queries};
+  let param = {...queries.value};
+  console.log(param)
   if(where === "index"){
-    param.delete("contentId")
+    delete param.contentId
   }
    router.push({name : where , query : param})
 }

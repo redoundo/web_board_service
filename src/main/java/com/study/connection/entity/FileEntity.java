@@ -14,6 +14,8 @@ import org.springframework.validation.annotation.Validated;
 @Setter
 @Builder
 @Validated
+@AllArgsConstructor
+@NoArgsConstructor
 public class FileEntity {
 
     @Min(1)

@@ -1,6 +1,8 @@
 package com.study.connection.dto.file;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class FilePartDto {
     @Nullable MultipartFile file1;
     @Nullable MultipartFile file2;

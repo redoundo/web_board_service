@@ -4,7 +4,7 @@ import axios from "axios";
 const props = defineProps({
   comments : Array
 })
-
+const url = "http://localhost:8080";
 async function commentAxios(){
   const user = document.getElementById("commentUser").getAttribute("value");
   const comment = document.getElementById("comment").getAttribute("value");
@@ -14,7 +14,7 @@ async function commentAxios(){
     formData.set("commentUser" , user);
     formData.set("comment" , comment);
 
-    await axios.post("http://localhost:8080/view/comment" , formData)
+    await axios.post(url + "/view/comment" , formData)
         .then(value => {
           console.log(value.data);
           this.$emit("addComment" , user , comment);

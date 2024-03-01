@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 @Builder
 public class ErrorResponses {
     private HttpStatus status;
-    private Integer codeStatus;
     private String statusMessage;
 
     /**
@@ -24,7 +23,6 @@ public class ErrorResponses {
         return ResponseEntity
                 .status(err.getStatus())
                 .body(ErrorResponses.builder()
-                        .codeStatus(err.getCodeStatus())
                         .statusMessage(err.getStatusMessage())
                         .status(err.getStatus())
                         .build());

@@ -1,9 +1,7 @@
 package com.study.connection.dto;
 
 import com.study.connection.dto.file.FileDto;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -13,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class NotFileButInFiles {
     @Nullable FileDto notFile1;
     @Nullable FileDto notFile2;

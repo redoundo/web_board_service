@@ -1,7 +1,7 @@
 <script setup>
 import axios from "axios";
-
-const props = defineProps({show : Boolean , contentId : Number , original : String})
+const url = "http://localhost:8080"
+const props = defineProps({show : Boolean , contentId : String , original : String})
 
 /**
  * 사용자가 입력한 비밀번호와 프론트로 가져와진 비밀번호가 동일한지 확인한다.
@@ -11,11 +11,11 @@ const props = defineProps({show : Boolean , contentId : Number , original : Stri
 async function checkAndDelete(){
   const password = document.getElementById("deletePassword").getAttribute("value");
   if((password??null) !== null){
-    await axios.post("http://localhost:8080/view/delete/checkPassword" , {password : password , original : props.original})
+    await axios.post(url + "/view/delete/checkPassword" , {password : password , original : props.original})
         .then(value => {
           console.log(value.data);
           if((value.data??null) !== null && value.data){
-            axios.post("http://localhost:8080/view/delete" , {password : password , contentId :props.contentId})
+            axios.post(url + "/view/delete" , {password : password , contentId :props.contentId})
                 .then(value1 => {
                   console.log(value1.data);
                 })

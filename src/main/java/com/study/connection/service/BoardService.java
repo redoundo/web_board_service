@@ -13,6 +13,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,7 +29,7 @@ public class BoardService {
     private final CommentMapper commentMapper;
     private final FileMapper fileMapper;
     private final CategoryMapper categoryMapper;
-
+    private final Logger logger = LoggerFactory.getLogger(BoardService.class);
     /**
      * 검색 조건을 적용해
      * @param condition 검색 조건
@@ -49,13 +51,22 @@ public class BoardService {
      * @return view.vue 에 필요한 내용.
      */
     public ViewPropsDto getViewProps(@NotNull @Min(1) Integer contentId){
-        ContentDto content = this.contentMapper.selectContent(contentId);
-        String categoryName = this.categoryMapper.findCategoryName(content.getContentCategoryId());
-        List<FileDto> files = this.fileMapper.selectFiles(contentId);
-        List<CommentDto> comments = this.commentMapper.selectComments(contentId);
+        String categoryName = null;
+        ContentDto content = null;
+        List<FileDto> files = null;
+        List<CommentDto> comments = null;
+        try {
+            content = this.contentMapper.selectContent(contentId);
+            categoryName = this.categoryMapper.findCategoryName(content.getContentCategoryId());
+            files = this.fileMapper.selectFiles(contentId);
+            comments = this.commentMapper.selectComments(contentId);
 
-        this.contentMapper.updateViewCount(contentId , content.getViewCount() + 1);
+            this.contentMapper.updateViewCount(contentId, content.getViewCount() + 1);
 
+
+        }catch (Exception e){
+            logger.debug(e.getMessage());
+        }
         return ViewPropsDto.builder()
                 .categoryName(categoryName)
                 .comments(comments)
@@ -86,8 +97,20 @@ public class BoardService {
     public List<CategoryDto> getAllCategories(){
         return this.categoryMapper.allCategories();
     }
+
+    /**
+     *
+     * @param things
+     * @return
+     */
     public Integer getContentIdByInserted(ThingsForGetContentId things){
-        return this.contentMapper.getContentId(things);
+        Integer id = null;
+        try{
+            id = this.contentMapper.getContentId(things);
+        } catch (Exception e){
+            logger.debug("BOARD SERVICE ERROR  getContentIdByInserted:   {}" , e.getMessage());
+        }
+        return id;
     }
     /**
      * 프론트에 넘겨진 비밀번호를 기반으로 사용자가 입력한 비밀번호가 동일한지 여부 확인.

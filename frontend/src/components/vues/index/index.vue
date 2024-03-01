@@ -2,10 +2,11 @@
 import {onBeforeMount , ref, watch} from 'vue';
 import axios from "axios";
 import {dateThatCanChangeYear} from "/src/components/utils/dateFunction.js";
-import {queryMapper} from "/src/components/utils/queryStringMapper.js"
 import search from "./search.vue";
 import results from "./results.vue";
 import pagination from './pagination.vue';
+import qs from 'qs';
+import {refValueToMap} from "../../utils/arrayToMap.js";
 const initCondition = new Map();
 
 const conditions = ref(initCondition);
@@ -28,11 +29,10 @@ let contents = ref([]);
  * @returns {Promise<void>}
  */
 async function indexAxios(){
-  console.log(conditions.value);
-  const query = queryMapper(conditions.value.get("contentCategoryId"), conditions.value.get("keyword") ,
-      conditions.value.get("start") , conditions.value.get("end") , conditions.value.get("page"));
+  console.log(conditions.value , refValueToMap(conditions.value));
+  const queryString = qs.stringify(refValueToMap(conditions.value) , {arrayFormat: 'repeat' , skipNulls: true})
   let url = "http://localhost:8080";
-  url = query.length > 1 ? url + "?" + query : url;
+  url = queryString.length > 1 ? url + "?" + queryString : url;
   console.log("indexAxios const url = "+url);
   await axios.get(url)
       .then(value => {

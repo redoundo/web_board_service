@@ -11,7 +11,6 @@ import com.study.connection.entity.FileEntity;
 import com.study.connection.entity.InsertContentEntity;
 import com.study.connection.error.CustomRuntimeException;
 import com.study.connection.error.ErrorCode;
-import com.study.connection.mapper.CategoryMapper;
 import com.study.connection.mapper.CommentMapper;
 import com.study.connection.mapper.ContentMapper;
 import com.study.connection.mapper.FileMapper;
@@ -34,6 +33,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * 내용 생성 서비스
+ */
 @Service
 @RequiredArgsConstructor
 @MultipartConfig
@@ -41,7 +43,6 @@ public class InsertService {
     private final ContentMapper contentMapper;
     private final CommentMapper commentMapper;
     private final FileMapper fileMapper;
-    private final CategoryMapper categoryMapper;
     private final Logger logger = LoggerFactory.getLogger(InsertService.class);
     /**
      * 비밀번호 검증 후 해당 contentId 로 저장된 내용 전체 삭제.
@@ -127,6 +128,8 @@ public class InsertService {
      * @param prop db 에 저장할 내용.
      */
     public void insertContent(@NotNull WritePropsNeedInsert prop)  {
+        try{
+
 
         InsertContentEntity content = prop.getContent();
         content.setPassword(new Encrypt().Encryption(content.getPassword()));//비밀번호에 단방향 암호화 적용.
@@ -151,6 +154,9 @@ public class InsertService {
                 List<FileEntity> files = new LoadFiles().upload(notNullFileParts , id);
                 this.fileMapper.insertFile(files);
             }
+        }
+        }catch (Exception e){
+            logger.debug("INSERT SERVICE INSERT CONTENT ERROR  :  {}" , e.getMessage());
         }
     }
 

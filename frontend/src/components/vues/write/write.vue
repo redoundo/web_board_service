@@ -5,13 +5,13 @@ import router from '/src/components/js/router.js';
 let categories = ref([]);
 
 onBeforeMount(() => writeAxios())
-
+const url = "http://localhost:8080";
 /**
  * write.vue 를 처음 로드했을 때 존재하는 카테고리들을 가져온다.
  * @returns {Promise<void>}
  */
 async function writeAxios(){
-  await axios.get("http://localhost:8080/write" )
+  await axios.get(url + "/write" )
       .then(value => {
         console.log(value.data);
         categories.value = value.data;
@@ -24,20 +24,22 @@ async function writeAxios(){
  * @returns {Promise<void>}
  */
 async function writeInsertAxios(){
-  const set = document.getElementById("setPassword").getAttribute("value");
-  const checked = document.getElementById("checkPassword").getAttribute("value");
+  const set = document.getElementById("setPassword").value
+  const checked = document.getElementById("checkPassword").value;
+  console.log(set , checked)
   if(set === checked){
 
     let formData = new FormData();
-    formData.set("contentCategoryId" , document.getElementById("writeCategoryId").getAttribute("value"));
-    formData.set("nickname" ,document.getElementById("writeNickname").getAttribute("value"));
-    formData.set("password" , document.getElementById("setPassword").getAttribute("value"));
-    formData.set("title" , document.getElementById("writeTitle").getAttribute("value"));
-    formData.set("content" , document.getElementById("writeContent").getAttribute("value"));
-    formData.set("file1" , document.getElementById("writeFile1").getAttribute("value"));
-    formData.set("file2" , document.getElementById("writeFile2").getAttribute("value"));
-    formData.set("file3" , document.getElementById("writeFile3").getAttribute("value"));
-    await axios.post("http://localhost:8080/write/insert" , formData , {headers : {"Content-Type" : 'multipart/form-data'}})
+    formData.set("contentCategoryId" , document.getElementById("writeCategoryId").value);
+    formData.set("nickname" ,document.getElementById("writeNickname").value);
+    formData.set("password" , document.getElementById("setPassword").value);
+    formData.set("title" , document.getElementById("writeTitle").value);
+    formData.set("content" , document.getElementById("writeContent").value);
+    formData.set("file1" , document.getElementById("writeFile1").files[0]);
+    formData.set("file2" , document.getElementById("writeFile2").files[0]);
+    formData.set("file3" , document.getElementById("writeFile3").files[0]);
+    console.log(formData.get("title"))
+    await axios.post(url + "/write/insert" , formData , {headers : {"Content-Type" : 'multipart/form-data'}})
         .then(value => {
           console.log(value.data);
           if(value.data !== null && value.data !== undefined){
@@ -54,7 +56,7 @@ async function writeInsertAxios(){
 
 <template>
   <div id="writeBoard">
-    <div>
+    <form id="writeForm" enctype="multipart/form-data" >
       <div>
       <span>
         <span>카테고리*</span>
@@ -96,10 +98,10 @@ async function writeInsertAxios(){
         <input id="writeFile3" name="file3" type="file"/>
       </span>
       </div>
-    </div>
+    </form>
     <span>
     <router-link v-bind:to="{name : 'index' , query : $router.query}">취소</router-link>
-      <button type="button" v-on:click="writeInsertAxios">저장</button>
+    <input form="writeForm" formenctype="multipart/form-data" type="button" v-on:click.self.prevent="writeInsertAxios" value="저장"/>
   </span>
   </div>
 </template>

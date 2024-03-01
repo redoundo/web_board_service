@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 @Setter
 @Builder
 @Validated
+@AllArgsConstructor
+@NoArgsConstructor
 public class InsertContentEntity {
     @Nullable
     private Integer contentId;

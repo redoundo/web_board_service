@@ -1,8 +1,6 @@
 package com.study.connection.dto;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.Date;
@@ -14,6 +12,8 @@ import java.sql.Date;
 @Builder
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class ConditionDto {
     @Nullable String keyword;
     @Nullable Integer contentCategoryId;

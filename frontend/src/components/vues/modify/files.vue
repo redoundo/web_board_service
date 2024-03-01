@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const props = defineProps({files : Array})
-
+const url = "http://localhost:8080"
 /**
  * db 에서 가져온 파일 정보에서 알아낸 파일 이름과 파일 경로를 통해 다운로드한다.
  * @param {String} name
@@ -11,7 +11,7 @@ const props = defineProps({files : Array})
  */
 async function downloadAxios(name ,path){
   const map = {"filePath" : path , "fileName" : name}
-  await axios.post("http://localhost:8080/view/modify/download" , map)
+  await axios.post(url + "/view/modify/download" , map)
       .then(value => {
         console.log(value.data)
       })

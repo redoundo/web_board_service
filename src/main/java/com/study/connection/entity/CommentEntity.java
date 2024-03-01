@@ -11,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Builder
 @Validated
+@AllArgsConstructor
+@NoArgsConstructor
 public class CommentEntity {
     @Min(1)
     @NotNull(message = "댓글 저장을 위해서는 댓글을 입력한 게시물의 아이디가 필요합니다.")

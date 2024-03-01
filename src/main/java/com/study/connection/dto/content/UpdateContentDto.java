@@ -1,9 +1,7 @@
 package com.study.connection.dto.content;
 
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.validation.annotation.Validated;
 
 /**
@@ -13,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 @Getter
 @Setter
 @Validated
+@AllArgsConstructor
+@NoArgsConstructor
 public class UpdateContentDto {
 
     @NotNull(message = "게시글 수정을 위해서 작성자는 필수 내용입니다.")

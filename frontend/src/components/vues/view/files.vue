@@ -2,11 +2,11 @@
 import axios from "axios";
 
 const props = defineProps({files : Array})
-
+const url = "http://localhost:8080"
 async function filesAxios(index){
   if((index??null) !== null && (props.files??null) !== null && props.files.length > 0){
     const data = {filePath : props.files[index]['filePath'] , fileName : props.files[index]['fileName']}
-    await axios.post("http://localhost:8080/view/download" , data)
+    await axios.post(url + "/view/download" , data)
         .then(value=>{
           console.log(value.data);
         })

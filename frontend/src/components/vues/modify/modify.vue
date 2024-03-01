@@ -5,7 +5,7 @@ import Files from './files.vue';
 import router from "../../js/router.js";
 
 onMounted(modifyAxios);
-
+const url = "http://localhost:8080";
 let query = ref({});
 let categoryName = ref(null);
 let content = ref({});
@@ -14,7 +14,7 @@ let files = ref([]);
 async function modifyAxios(){
   const params = router.currentRoute.value.query;
   query = {...params};
-  await axios.get("http://localhost:8080/view/modify?contentId=" + params['contentId'])
+  await axios.get(url + "/view/modify?contentId=" + params['contentId'])
       .then(value => {
         console.log(value.data);
         if((value.data??null) !== null && (value.data['categoryName']??null) !== null){
@@ -60,7 +60,7 @@ async function updateAxios(){
     formData.set("file2" , document.getElementById("modifyFile2")?.getAttribute("value"));
     formData.set("file3" , document.getElementById("modifyFile3")?.getAttribute("value"));
 
-    await axios.post("http://localhost:8080/view/modify/update?contentId=" + query["contentId"] , formData)
+    await axios.post(url + "/view/modify/update?contentId=" + query["contentId"] , formData)
         .then(value => {
           console.log(value.data);
           this.$router.push({name : "view" , query : query});
