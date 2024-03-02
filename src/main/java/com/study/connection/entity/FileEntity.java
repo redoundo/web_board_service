@@ -26,22 +26,18 @@ public class FileEntity {
     @NotNull
     private Integer fileVolume;
 
-    @NotEmpty
     @NotBlank
     @NotNull
     private String fileName;
 
-    @NotEmpty
     @NotBlank
     @NotNull
     private String fileOriginalName;
 
-    @NotEmpty
     @NotBlank
     @NotNull
     private String filePath;
 
-    @NotEmpty
     @NotBlank
     @NotNull
     private String fileExtension;

@@ -13,7 +13,6 @@ import com.study.connection.utils.LoadFiles;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +87,7 @@ public class BoardRestController {
      */
     @GetMapping( value = {"/view/modify"})
     public ResponseEntity<ModifyPropsDto> getModifyProps(
-            @NotNull @NotEmpty @RequestParam("contentId") String contentId){
+            @NotNull @NotBlank @RequestParam("contentId") String contentId){
 
         ModifyPropsDto props = this.boardService.getModifyProps(Integer.parseInt(contentId));
         return ResponseEntity
@@ -148,7 +147,7 @@ public class BoardRestController {
             @Nullable @RequestBody(required = false) FilePartDto parts ,
             @Nullable @RequestBody(required = false) NotFileButInFiles files ,
             @NotNull @Valid @RequestBody UpdateContentDto update ,
-            @NotNull @NotEmpty @NotBlank @RequestParam("contentId") String contentId)  {
+            @NotNull @NotBlank @RequestParam("contentId") String contentId)  {
 
         this.insertService.updateModifyProps(parts , files , update , Integer.parseInt(contentId));
         return ResponseEntity
