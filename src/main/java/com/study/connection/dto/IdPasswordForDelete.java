@@ -22,7 +22,6 @@ public class IdPasswordForDelete {
     private Integer contentId;
 
     @NotNull(message = "게시글 삭제는 사용자 인증 후 진행됩니다.")
-    @NotEmpty(message = "게시글 삭제는 사용자 인증 후 진행됩니다.")
     @NotBlank(message = "빈칸은 유효한 비밀번호가 아닙니다.")
     private String password;
 }

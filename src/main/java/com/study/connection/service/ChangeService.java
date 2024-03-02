@@ -39,11 +39,11 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @MultipartConfig
-public class InsertService {
+public class ChangeService {
     private final ContentMapper contentMapper;
     private final CommentMapper commentMapper;
     private final FileMapper fileMapper;
-    private final Logger logger = LoggerFactory.getLogger(InsertService.class);
+    private final Logger logger = LoggerFactory.getLogger(ChangeService.class);
     /**
      * 비밀번호 검증 후 해당 contentId 로 저장된 내용 전체 삭제.
      * @param contentId 삭제하려는 contentId

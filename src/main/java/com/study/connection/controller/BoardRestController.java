@@ -8,7 +8,7 @@ import com.study.connection.entity.CommentEntity;
 import com.study.connection.error.CustomRuntimeException;
 import com.study.connection.error.ErrorCode;
 import com.study.connection.service.BoardService;
-import com.study.connection.service.InsertService;
+import com.study.connection.service.ChangeService;
 import com.study.connection.utils.LoadFiles;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.validation.Valid;
@@ -40,7 +40,7 @@ import java.util.List;
 @MultipartConfig
 public class BoardRestController {
     private final BoardService boardService;
-    private final InsertService insertService;
+    private final ChangeService changeService;
     private final Logger logger = LoggerFactory.getLogger(BoardRestController.class);
     /**
      *  index.vue 에 필요한 모든 내용 제공.
@@ -119,7 +119,7 @@ public class BoardRestController {
         Integer id = null;
         try{
             logger.debug("WritePropsNeedInsert prop :   {}" , prop);
-        this.insertService.insertContent(prop);
+        this.changeService.insertContent(prop);
         ThingsForGetContentId things = ThingsForGetContentId.builder()
                 .title(prop.getContent().getTitle())
                 .contentCategoryId(prop.getContent().getContentCategoryId())
@@ -149,7 +149,7 @@ public class BoardRestController {
             @NotNull @Valid @RequestBody UpdateContentDto update ,
             @NotNull @NotBlank @RequestParam("contentId") String contentId)  {
 
-        this.insertService.updateModifyProps(parts , files , update , Integer.parseInt(contentId));
+        this.changeService.updateModifyProps(parts , files , update , Integer.parseInt(contentId));
         return ResponseEntity
                 .ok()
                 .body(true);
@@ -188,7 +188,7 @@ public class BoardRestController {
      */
     @PostMapping(value = {"/view/comment"} ,headers = {"Content-Type=application/json"})
     public ResponseEntity<Boolean> insertViewComment(@NotNull @Valid @RequestBody CommentEntity comment){
-        this.insertService.insertComment(comment);
+        this.changeService.insertComment(comment);
         return ResponseEntity
                 .ok()
                 .body(true);
@@ -203,7 +203,7 @@ public class BoardRestController {
     public ResponseEntity<Boolean> deleteIfHadValidPassword(
             @NotNull @Valid @RequestBody IdPasswordForDelete arg) {
 
-        this.insertService.deleteAllIfPasswordMatch(arg.getContentId() , arg.getPassword());
+        this.changeService.deleteAllIfPasswordMatch(arg.getContentId() , arg.getPassword());
         return ResponseEntity.ok().body(true);
     }
 
