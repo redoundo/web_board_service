@@ -1,22 +1,17 @@
 <script setup>
 import {onBeforeMount , ref, watch} from 'vue';
 import axios from "axios";
-import {dateThatCanChangeYear} from "/src/components/utils/dateFunction.js";
 import search from "./search.vue";
 import results from "./results.vue";
 import pagination from './pagination.vue';
 import qs from 'qs';
 import {refValueToMap} from "../../utils/arrayToMap.js";
-const initCondition = new Map();
+import router from "../../js/router.js";
+import {queryParser} from "../../utils/queryParsing.js";
 
-const conditions = ref(initCondition);
+const conditions = ref(queryParser(router.currentRoute.value.query));
 
 onBeforeMount(() => {
-  initCondition.set("contentCategoryId" , null);
-  initCondition.set("keyword" , null);
-  initCondition.set("start" , dateThatCanChangeYear(-1));
-  initCondition.set("end" , dateThatCanChangeYear(null));
-  initCondition.set("page" , 1);
   indexAxios()
 })
 

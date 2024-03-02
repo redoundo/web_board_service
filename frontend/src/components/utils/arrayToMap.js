@@ -10,6 +10,11 @@ export function toMap(list){
     return mapped;
 }
 
+/**
+ * qs 라이브러리를 사용하기 위해 map 을 object 로 바꾸는 작업
+ * @param refValue ref 값
+ * @returns {{start: *, end: *, contentCategoryId: *, page: *, keyword: *}}
+ */
 export function refValueToMap(refValue){
     return {
         page : refValue.get("page") , end : refValue.get("end") ,
