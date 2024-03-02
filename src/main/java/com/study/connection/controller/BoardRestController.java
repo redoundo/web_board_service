@@ -24,7 +24,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -33,7 +32,6 @@ import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 모든 요청 처리
@@ -51,18 +49,16 @@ public class BoardRestController {
      * @return 검색 조건으로 나온 결과를 반환하는 responseEntity
      */
     @GetMapping(value = {"/index" , "" , "/"})
-    public ResponseEntity<AllIndexPropsDto> getBoardContents(
-            @RequestParam @NotNull Map<String , Object> condition){
+    public ResponseEntity<AllIndexPropsDto> getBoardContents(ConditionDto condition){
         Date end = Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d")));
         Date start = Date.valueOf(LocalDateTime.now().minusYears(1).format(DateTimeFormatter.ofPattern("y-M-d")));
 
         ConditionDto conditionDto = ConditionDto.builder()
-                .contentCategoryId(condition.get("contentCategoryId") == null ? null :
-                        Integer.parseInt(condition.get("contentCategoryId").toString()))
-                .page(condition.get("page") == null ? 1 : Integer.parseInt(condition.get("page").toString()))
-                .keyword(condition.get("keyword") == null ? null : condition.get("keyword").toString())
-                .end(condition.get("end") == null? end: Date.valueOf(condition.get("end").toString()))
-                .start(condition.get("start") == null ? start : Date.valueOf(condition.get("start").toString()))
+                .contentCategoryId(condition.getContentCategoryId() == null ? null : condition.getContentCategoryId())
+                .page(condition.getPage() == null ? 1 : condition.getPage())
+                .keyword(condition.getKeyword() == null ? null : condition.getKeyword())
+                .end(condition.getEnd() == null? end: condition.getEnd())
+                .start(condition.getStart() == null ? start : condition.getStart())
                 .build();
 
         AllIndexPropsDto props = this.boardService.getIndexProps(conditionDto);
@@ -70,12 +66,6 @@ public class BoardRestController {
                 .ok()
                 .body(props);
     }
-    @GetMapping(value = "/notIndex")
-    public ResponseEntity<?> getting(ConditionDto dto){
-        logger.debug("dto : {}" , dto);
-        return ResponseEntity.ok(true);
-    }
-
     /**
      * contentId 로 찾은 내용 반환.
      * 유효성 혹은 다른 runtimeException 들은 advice 클래스에서 다룬다.
@@ -92,7 +82,7 @@ public class BoardRestController {
     }
 
     /**
-     * contentId 로 modify.html 에 필요한 내용 반환.
+     * contentId 로 modify.vue 에 필요한 내용 반환.
      * @param contentId 내용을 가져올 contentId
      * @return 내용을 담은 responseEntity
      */

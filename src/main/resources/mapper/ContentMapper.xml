@@ -40,14 +40,13 @@
         (SELECT IF ( COUNT(*)>0 , true , false ) FROM files
         WHERE files.contentIdHaveFile= contents.contentId) AS fileExistence
         FROM contents
-        <include refid="whereQuery"></include>
+        <include refid="whereQuery"/>
         LIMIT #{page},10;
     </select>
     <select id="queriedTotal" resultType="java.lang.Integer" parameterType="condition">
         SELECT COUNT(*) AS count
         FROM contents
-        <include refid="whereQuery"></include>
-
+        <include refid="whereQuery"/>
     </select>
     <select id="getPasswordByContentId" parameterType="java.lang.Integer" resultType="java.lang.String">
         SELECT password
