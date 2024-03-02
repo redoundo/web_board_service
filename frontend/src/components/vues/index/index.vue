@@ -1,5 +1,5 @@
 <script setup>
-import {onBeforeMount , ref, watch} from 'vue';
+import {onMounted, ref, watch} from 'vue';
 import axios from "axios";
 import search from "./search.vue";
 import results from "./results.vue";
@@ -11,9 +11,7 @@ import {queryParser} from "../../utils/queryParsing.js";
 
 const conditions = ref(queryParser(router.currentRoute.value.query));
 
-onBeforeMount(() => {
-  indexAxios()
-})
+onMounted(() => { indexAxios() })
 
 let total = ref(0);
 let categories = ref([]);

@@ -8,13 +8,11 @@ import {dateThatCanChangeYear} from "./dateFunction.js";
 export function queryParser(query){
     const end = dateThatCanChangeYear(null);
     const start = dateThatCanChangeYear(-1);
-    const map = new Map();
     const obj = query !== null? {...query} : {}
-    map.set("page" , (obj["page"]??null) !== null ? obj["page"] : 1)
+    return new Map()
+        .set("page" , (obj["page"]??null) !== null ? obj["page"] : 1)
         .set("keyword" , (obj["keyword"]??null) !== null ? obj["keyword"] : null)
         .set("end" , (obj['end']??null) !== null ? obj["end"]: end)
         .set("start" , (obj['start']??null) !== null ? obj["start"]: start)
         .set("contentCategoryId" , (obj["contentCategoryId"]??null) !== null ? obj["contentCategoryId"] : null)
-
-    return map;
 }
