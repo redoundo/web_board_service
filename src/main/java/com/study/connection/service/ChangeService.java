@@ -82,7 +82,7 @@ public class ChangeService {
      * @param update 수정해야하는 게시물 내용.
      * @param contentId 수정하려는 게시물의 contentId
      */
-    public void updateModifyProps(@Nullable FilePartDto fileParts , @Nullable NotFileButInFiles notFiles ,
+    public void updateModifyProps(@Nullable List<MultipartFile> fileParts , @Nullable NotFileButInFiles notFiles ,
                                @NotNull UpdateContentDto update , @NotNull @Min(1) Integer contentId) {
 
         String dbPassword = this.contentMapper.getPasswordByContentId(contentId);
@@ -107,9 +107,7 @@ public class ChangeService {
 
         if(fileParts != null){ // 업로드해야할 파일이 있을 때
             // null 이 아닌 multiPartFile 들
-            List<MultipartFile> notNullFileParts =  new ArrayList<>(
-                    Arrays.asList(fileParts.getFile1() , fileParts.getFile2() , fileParts.getFile3()))
-                    .stream().filter(Objects::nonNull).toList();
+            List<MultipartFile> notNullFileParts =  fileParts.stream().filter(Objects::nonNull).toList();
 
             if(!notNullFileParts.isEmpty()){ // db 에 생성해야하는 파일이 하나라도 있을 때.
                 List<FileEntity> entities = new LoadFiles().upload(notNullFileParts , contentId); // 업로드 진행 및 정보 추출.
@@ -136,9 +134,7 @@ public class ChangeService {
         this.contentMapper.insertContent(content);//contents 테이블에 저장.
 
         if(prop.getFiles() != null){
-            FilePartDto fileParts = prop.getFiles();
-            List<MultipartFile> notNullFileParts = new ArrayList<>(
-                    Arrays.asList(fileParts.getFile1() , fileParts.getFile2() , fileParts.getFile3()))
+            List<MultipartFile> notNullFileParts = prop.getFiles()
                     .stream().filter(Objects::nonNull).toList();
 
             if(!notNullFileParts.isEmpty()){

@@ -5,6 +5,9 @@ import com.study.connection.entity.InsertContentEntity;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,5 +16,5 @@ import org.jetbrains.annotations.Nullable;
 @NoArgsConstructor
 public class WritePropsNeedInsert {
     private @NotNull InsertContentEntity content;
-    private @Nullable FilePartDto files;
+    private @Nullable List<MultipartFile> files;
 }

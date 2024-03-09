@@ -20,7 +20,7 @@ import static com.study.connection.utils.CheckValid.checking;
  */
 public class LoadFiles {
 
-    @Value("${spring.servlet.multipart.location}")
+    @Value("${upload.file.location}")
     private String uploadUrl;
 
     /**

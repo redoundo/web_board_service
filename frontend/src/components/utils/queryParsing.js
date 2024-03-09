@@ -6,6 +6,7 @@ import {dateThatCanChangeYear} from "./dateFunction.js";
  * @returns {Map<any, any>} 검색 조건 내용.
  */
 export function queryParser(query){
+    console.log(query)
     const end = dateThatCanChangeYear(null);
     const start = dateThatCanChangeYear(-1);
     const obj = query !== null? {...query} : {}

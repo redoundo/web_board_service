@@ -35,7 +35,7 @@
         <logger name="com.study.connection.dto" level="debug" additivity="true" >
             <AppenderRef ref="console" />
         </logger>
-        <logger name="com.study.connection.Application" level="debug" additivity="true">
+        <logger name="com.study.connection.Application" level="trace" additivity="true">
             <AppenderRef ref="console"/>
         </logger>
         <logger name="com.study.connection.error" level="debug" additivity="true">
