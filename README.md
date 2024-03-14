@@ -1,16 +1,6 @@
-
-# 사전 준비
-
-## JDK 11 설치
-
-## Docker Desktop 설치
-https://www.docker.com/products/docker-desktop/
-
-## Apache Tomcat 설치
-https://tomcat.apache.org/download-90.cgi
-
-## Docker Compose 실행 - MySql
-``` 
-cd help
-docker-compose up -d
-```
+# web_board_service_project
+springboot 와 mybatis, thymleaf 를 이용해 만든 게시판 프로젝트
+## 사용한 기술
+springboot, mybatis, thymleaf, mysql, git
+## 제작 기간
+2024.02.04 - 2024.02.10
