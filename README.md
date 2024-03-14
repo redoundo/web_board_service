@@ -1,16 +1,6 @@
-
-# 사전 준비
-
-## JDK 11 설치
-
-## Docker Desktop 설치
-https://www.docker.com/products/docker-desktop/
-
-## Apache Tomcat 설치
-https://tomcat.apache.org/download-90.cgi
-
-## Docker Compose 실행 - MySql
-``` 
-cd help
-docker-compose up -d
-```
+# web_board_service_project
+mvc 패턴 적용
+## 사용된 기술
+servlet, jsp, jdbc, git, mysql
+## 진행 기간
+2024.01.24 - 2024.02.03
