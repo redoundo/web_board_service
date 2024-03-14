@@ -1,8 +1,8 @@
 # spring boot web-board project
-스프링 부트 와 jsp 로 제작한 게시판 프로젝트
+restful api를 통해 server/frontend 분리시킨 게시판 프로젝트
 
 ## 개발 기간
-2024.01.20 - 2024.01.27
+2024.02.11 - 2024.02.24
 
 ## 개발 환경
-jdk 11 , docker , tomcat 10 , jsp
+jdk 17 , docker , spring boot, vue.js, mybatis, git
