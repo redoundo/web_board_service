@@ -1,5 +1,5 @@
 # spring boot web-board project
-restful api를 통해 server/frontend 분리시킨 게시판 프로젝트
+- restful api를 통해 server/frontend 분리시킨 게시판 프로젝트입니다.
 
 ## 개발 기간
 2024.02.11 - 2024.02.24
