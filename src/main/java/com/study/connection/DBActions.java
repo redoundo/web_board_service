@@ -6,10 +6,6 @@ import lombok.NonNull;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import org.apache.commons.fileupload2.core.FileItem;
-import org.apache.commons.fileupload2.jakarta.servlet6.JakartaServletFileUpload;
-import org.apache.commons.fileupload2.core.DiskFileItemFactory;
 import java.util.*;
 
 public class DBActions {
@@ -20,9 +16,6 @@ public class DBActions {
             "submitDate" , "updateDate" , "fileExistence"));
 
     public List<ContentsEntity> returnFullContents(String conditions) {
-//        DiskFileItemFactory factory = new DiskFileItemFactory.Builder().get();
-//        JakartaServletFileUpload upload = new JakartaServletFileUpload(factory);
-
         List<ContentsEntity> entityList=new ArrayList<>();
         try( Connection connection = new DBConnection().getConnection() ){
             String sql = "SELECT " + this.fullContentSelect + "FROM contents";
@@ -99,6 +92,7 @@ public class DBActions {
                 System.out.println(updateResult);
             }
         } catch (Exception e){
+            System.out.println("updateDB exception  :   " +  e.getMessage() +  "    sql :" + sql);
             throw new RuntimeException(e);
         }
     }

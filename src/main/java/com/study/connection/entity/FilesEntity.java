@@ -1,11 +1,18 @@
 package com.study.connection.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class FilesEntity {
-    String fileName , filePath , fileExtension , fileOriginalName;
-    Integer contentIdHaveFile , fileId , fileVolume;
+    private String fileName;
+    private String filePath;
+    private String fileExtension;
+    private String fileOriginalName;
+    private Integer contentIdHaveFile;
+    private Integer fileId;
+    private Integer fileVolume;
 }

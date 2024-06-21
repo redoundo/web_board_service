@@ -70,7 +70,21 @@
         }
         //삭제를 위한 비밀번호 확인 모달을 불러내나 임시적으로 페이지 이동을 하게끔 만들었다. 비밀번호,유효성 확인,board.jsp로의 이동은 전부 forDelete.jsp에서 이뤄진다.
         function callDeleteModal() {
-            return location.href = window.location.href.replace("http://localhost:8080" , "").replace("view.jsp" , "forDelete.jsp");
+            return $.ajax({
+               type : "GET" , url : window.location.href.replace("http://localhost:8080" , "").replace("view.jsp" , "modalProcess.jsp"),
+              success(data) {
+                  console.log(data);
+                  document.getElementById("deleteModal").insertAdjacentHTML("afterbegin", data);
+              },
+              error(request,status, error){
+                   console.log(error);
+                   console.log(request);
+                   console.log(status);
+              }
+           })
+        }
+        function displayNone(){
+            return document.getElementById("provePassword").style.visibility = 'hidden'
         }
     </script>
 </head>

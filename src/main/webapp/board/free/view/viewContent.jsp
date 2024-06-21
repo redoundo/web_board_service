@@ -47,13 +47,13 @@
         display: flex;
         flex-direction: row;
         font-size: 16px;
-        gap: 10px;
+        gap: 1em;
         border-bottom: 2px solid darkseagreen;
         padding-bottom: 10px;
     }
     #categoryNameDiv{
         font-weight: 900;
-        flex-basis: 90%;
+        flex-basis: 10%;
         text-align: center;
     }
     #titleDiv{
@@ -64,7 +64,7 @@
         display: flex;
         flex-direction: row;
         font-size: 14px;
-        padding: 0px 5px;
+        padding: 10px 5px;
         justify-content: space-between;
     }
     #nicknameSpan{
@@ -74,10 +74,14 @@
     #elseDetails{
         display: flex;
         flex-direction: row;
-        gap: 10px;
+        gap: 20px;
+        margin-right: 10px;
     }
     #contentText{
-        padding: 0px 15px; font-size: 15px;
+        padding: 0px 15px;
+        font-size: 15px;
+        min-height: 50px;
+        margin: 15px;
     }
     #commentForm{
         display: flex;
@@ -86,6 +90,7 @@
         padding: 1em;
         background-color: #f7f7f7;
         font-size: 14px;
+        margin: 0px;
     }
     #nicknameAndSave{
         display: flex;
@@ -105,7 +110,7 @@
         padding: 5px 15px;
     }
     #textareaLabel{
-        padding: 0px 20px;
+        padding: 0px 20px 5px 20px;
         font-size: 13px;
     }
     #textareaContent{
@@ -120,6 +125,7 @@
         flex-direction: row;
         justify-content: center;
         gap: 2em;
+        margin-top: 1.5em;
     }
     .btn{
         padding: 6px 20px;
@@ -127,6 +133,70 @@
         background-color: darkseagreen;
         border: 1px solid transparent;
         color: white;
+    }
+    .commentBlock{
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 1em;
+        background-color: #f7f7f7;
+        font-size: 14px;
+        border-top: 1px solid darkseagreen;
+    }
+    .userAndDate{
+        display: flex;
+        gap: 15px;
+        margin: 0px 20px;
+        flex-direction: row;
+        align-items: center;
+    }
+    .commentUser{
+        font-size: 13px;
+        border-bottom: 1px solid darkseagreen;
+        padding: 5px;
+    }
+    .commentedDate{
+        font-size: 13px;
+    }
+    .comment{
+        margin: 0px 20px;
+        padding: 5px 5px 8px 5px;
+        font-size: 14px;
+    }
+    #deleteSubmitBtn{
+        border: 1.5px solid darkseagreen;
+        padding: 4px 13px;
+        color: dimgray;
+        margin: 0px;
+    }
+    #deleteDisMiss{
+        background-color: darkseagreen;
+        padding: 4px 13px;
+        color: white;
+        margin: 0px;
+        margin-right: 20px;
+    }
+    #deleteModalFooter{
+        padding-right: 2em;
+    }
+    #provePassword{
+        display: block;
+        top: 25%;
+    }
+    #proveForm{
+        margin-block-start: 1em;
+        margin-left: 1em;
+        font-size: 15px;
+    }
+    #proveLabel{
+        margin-right: 1em;
+    }
+    #insertToProve{
+        border-bottom: 1px solid darkseagreen;
+        width: 60%;
+    }
+    #deleteModalContent{
+        width: 85%;
     }
 </style>
     <h4 style="margin: 0px;margin-bottom: 2em;">게시판 - 보기</h4>
@@ -150,17 +220,6 @@
         </div>
     </div>
     <div id="CommentBlock">
-        <c:if test='<%=request.getAttribute("comments") != null%>'>
-            <c:forEach var="comments" items='<%=(List<CommentsEntity>) request.getAttribute("comments")%>'>
-                <div class="commentBlock">
-                    <span>
-                        <span>${comments.commentUser}</span>
-                        <span>${comments.commentedDate}</span>
-                    </span>
-                    <span>${comments.comment}</span>
-                </div>
-            </c:forEach>
-        </c:if>
         <div>
             <form id="commentForm" action="commentProcess.jsp" method="get">
                 <input type="hidden" name="commentedContentId" value='<%=request.getAttribute("contentId")%>'/>
@@ -175,7 +234,19 @@
                 </label>
             </form>
         </div>
+        <c:if test='<%=request.getAttribute("comments") != null%>'>
+            <c:forEach var="comments" items='<%=(List<CommentsEntity>) request.getAttribute("comments")%>'>
+                <div class="commentBlock">
+                    <span class="userAndDate">
+                        <span class="commentUser">${comments.commentUser}</span>
+                        <span class="commentedDate">${comments.commentedDate}</span>
+                    </span>
+                    <span class="comment">${comments.comment}</span>
+                </div>
+            </c:forEach>
+        </c:if>
     </div>
+    <div id="deleteModal"></div>
     <span id="buttons">
         <button type="button" class="btn" onclick="moveToBoard()">목록</button>
         <button type="button" class="btn" onclick="goToAdjust()">수정</button>

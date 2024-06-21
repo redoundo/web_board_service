@@ -50,7 +50,7 @@
             flex-direction: row;
             justify-content: center;
             gap: 2em;
-            margin-top: 2em;
+            margin-top: 1.5em;
         }
         .btn{
             padding: 6px 20px;
@@ -191,6 +191,6 @@
         <button class="btn" type="button" onclick="toViewProcess()">취소</button>
         <input class="input apply btn" onsubmit="passwordAjax()" form="ModifyForm" type="submit"
                formaction='<%=request.getRequestURL().toString().replace("http://localhost:8080" , "").replace("modifyContent.jsp" , "updateModify.jsp").replace("modify.jsp" , "updateModify.jsp")%>'
-               formmethod="post" value="저장" formenctype="multipart/form-data"/>
+               formmethod="post" value="저장"/>
     </span>
 </div>

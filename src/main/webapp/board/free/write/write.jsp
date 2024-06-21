@@ -67,7 +67,7 @@
             flex-direction: row;
             justify-content: center;
             gap: 2em;
-            margin-top: 2em;
+            margin-top: 1.5em;
         }
         .btn{
             padding: 6px 20px;
@@ -178,7 +178,7 @@
                 </div>
             </form>
             <div id="buttons">
-                <input class="btn" form="OptionForm" type="submit" formaction="/board/free/write/writeProcess.jsp" formmethod="post" value="저장"/>
+                <input class="btn" form="OptionForm" formenctype="multipart/form-data" type="submit" formaction='<%=request.getRequestURL().toString().replace("http://localhost:8080" , "").replace("write.jsp" , "writeProcess.jsp")%>' formmethod="post" value="저장"/>
                 <button class="btn" type="button" onclick="cancelWrite()">취소</button>
             </div>
         </div>
