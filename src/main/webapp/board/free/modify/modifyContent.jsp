@@ -90,6 +90,14 @@
             width: 100%;
             border: 1px solid darkseagreen;
         }
+        #modifyFileContent{
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            flex-basis: 75%;
+            padding: 10px;
+            gap: 10px;
+        }
     </style>
     <form id="ModifyForm" enctype="multipart/form-data">
         <div>
@@ -157,30 +165,30 @@
             </div>
             <div class="modifyTableRows">
                 <span class="modifyTableRowText">파일 첨부</span>
-                <div>
+                <div id="modifyFileContent">
                     <c:choose>
                         <c:when test='<%=request.getAttribute("fileExistence") != null%>'>
                             <c:set var="files" value='<%=(List<Map<String,String>>) request.getAttribute("files")%>'/>
-                            <c:if test="${files.size() == 1}">
-                                <a download='${files.get(0).get("file_path")}'>${files.get(0).get("fileName")}</a>
-                                <label><input name="modify_file2" type="file"/></label>
-                                <label><input name="modify_file3" type="file"/></label>
-                            </c:if>
-                            <c:if test="${ files.size() == 2 }">
-                                <a download='${files.get(0).get("file_path")}'>${files.get(0).get("fileName")}</a>
-                                <a download='${files.get(1).get("file_path")}'>${files.get(1).get("fileName")}</a>
-                                <label><input name="modify_file3" type="file"/></label>
-                            </c:if>
-                            <c:if test="${ files.size() == 3 }">
-                                <a download='${files.get(0).get("file_path")}'>${files.get(0).get("fileName")}</a>
-                                <a download='${files.get(1).get("file_path")}'>${files.get(1).get("fileName")}</a>
-                                <a download='${files.get(2).get("file_path")}'>${files.get(2).get("fileName")}</a>
+                            <c:forEach var="index" begin="1" end="${files.size()}" step="1">
+                                <span>
+                                    <i class="bi bi-download"></i>
+                                    <a download='${files.get(index - 1).get("filePath")}'>${files.get(index - 1).get("fileName")}</a>
+                                </span>
+                            </c:forEach>
+                            <c:if test="${3 - files.size() > 0}">
+                                <c:forEach var="index" begin="1" end="${3 - files.size()}" step="1">
+                                    <span>
+                                        <input name='modify_file${index}' type="file"/>
+                                    </span>
+                                </c:forEach>
                             </c:if>
                         </c:when>
                         <c:otherwise>
-                            <label for="addFile1"><input name="modify_file1" type="file" id="addFile1"/></label>
-                            <label for="addFile2"><input name="modify_file2" type="file" id="addFile2"/></label>
-                            <label for="addFile3"><input name="modify_file3" type="file" id="addFile3"/></label>
+                            <c:forEach var="index" begin="1" end="3" step="1">
+                                <span>
+                                    <input name='modify_file${index}' type="file" id='addFile${index}'/>
+                                </span>
+                            </c:forEach>
                         </c:otherwise>
                     </c:choose>
                 </div>

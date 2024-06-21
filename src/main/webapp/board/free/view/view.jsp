@@ -86,6 +86,29 @@
         function displayNone(){
             return document.getElementById("provePassword").style.visibility = 'hidden'
         }
+        function downloadFile(name, path) {
+            let downloadUrl = window.location.href.replace("http://localhost:8080" , "").replace("view/view.jsp" , "files/downloadFile.jsp");
+            console.log(downloadUrl);
+            if (downloadUrl.includes("?")) downloadUrl = downloadUrl  + "&path=" + path + "&name=" + name;
+            else downloadUrl = downloadUrl  + "?path=" + path + "&name=" + name;
+            return $.ajax({
+                 type : "GET", xhrFields: {responseType: 'blob'},
+                 url : downloadUrl,
+                 success(data) {
+                     console.log(data);
+                     let blob = new Blob([data]);
+                     let link = document.createElement('a');
+                     link.href = window.URL.createObjectURL(blob);
+                     link.download = name;
+                     link.click();
+                 },
+                 error(request,status, error){
+                      console.log(error);
+                      console.log(request);
+                      console.log(status);
+                 }
+              })
+        }
     </script>
 </head>
 <body>

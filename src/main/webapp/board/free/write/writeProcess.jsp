@@ -112,9 +112,9 @@
 
     //files db에 넣기 위해서는 contentId가 필요하기 때문에 먼저 contents db에 내용을 넣고 난 뒤에 contentId를 가져온다.
     try {
-        String forGetContentId = " nickname='" + nickname + "' AND title='" + title + "' AND contentCategoryId=" + categoryId + " AND STR_TO_DATE('" + submitDate + "','%Y.%m.%d %H:%i');"
+        String forGetContentId = " nickname='" + nickname + "' AND title='" + title + "' AND contentCategoryId=" + categoryId + " AND STR_TO_DATE('" + submitDate + "','%Y.%m.%d %H:%i');";
         System.out.println("forGetContentIdSql :    " + forGetContentId);
-        List<ContentsEntity> entity = new DBActions().returnFullContents();
+        List<ContentsEntity> entity = new DBActions().returnFullContents(forGetContentId);
         request.setAttribute("contentId" , entity.get(0).getContentId());
     } catch (Exception e) {
         System.out.println("writeProcessForGetContentId :    " + e.getMessage());
@@ -140,5 +140,5 @@
     System.out.println("request.getRequestURL().toString()  :   " + request.getRequestURL().toString() + request.getAttribute("contentId"));
     //db에 집어넣는 작업이 완료되면 board.jsp로 이동하지 않고 view.jsp로 이동해 해당 내용으로 만들어낸 새로운 글을 보여준다.
     response.sendRedirect(request.getRequestURL().toString()
-            .replace("http://localhost:8080/eb-study-template-1week" , "").replace("write/writeProcess.jsp" , "view/view.jsp") + "?contentId=" + request.getAttribute("contentId"));
+            .replace("http://localhost:8080" , "").replace("write/writeProcess.jsp" , "view/view.jsp") + "?contentId=" + request.getAttribute("contentId"));
 %>

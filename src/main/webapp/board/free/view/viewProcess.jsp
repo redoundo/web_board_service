@@ -3,6 +3,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="com.study.connection.DBActions" %>
 <%@ page import="com.study.connection.entity.CommentsEntity" %>
+<%@ page import="com.study.connection.entity.FilesEntity" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8"
          pageEncoding="UTF-8"%>
 <%
@@ -67,6 +68,12 @@
             System.out.println("TitleNicknameContentCategoryIdError :   " + e.getMessage());
         }
     }
+    Object existence = request.getAttribute("fileExistence");
+    if(existence != null && Boolean.parseBoolean(existence.toString())) {
+        List<FilesEntity> files = new DBActions().existFileEntities(Integer.parseInt(request.getAttribute("contentId").toString()));
+        if (files.size() > 0) request.setAttribute("files", files);
+    }
+
     try{
         List<CommentsEntity> entities = new DBActions().ReturnFullComments(request.getAttribute("contentId").toString());
         request.setAttribute("comments" , entities);

@@ -2,6 +2,7 @@ package com.study.connection;
 
 import com.study.connection.entity.CommentsEntity;
 import com.study.connection.entity.ContentsEntity;
+import com.study.connection.entity.FilesEntity;
 import lombok.NonNull;
 
 import java.sql.Connection;
@@ -110,5 +111,28 @@ public class DBActions {
             throw new RuntimeException(e);
         }
         return categoryName;
+    }
+
+    public List<FilesEntity> existFileEntities(Integer contentId){
+        List<FilesEntity> filesEntities = new ArrayList<>();
+        try(Connection connection = new DBConnection().getConnection()) {
+            String sql = "SELECT * FROM files WHERE contentIdHaveFile=" + contentId + ";";
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+            while(resultSet.next()) {
+                FilesEntity file = new FilesEntity();
+                file.setFileExtension(resultSet.getString("fileExtension"));
+                file.setFileId(resultSet.getInt("fileId"));
+                file.setFileName(resultSet.getString("fileName"));
+                file.setFileVolume(resultSet.getInt("fileVolume"));
+                file.setFileOriginalName(resultSet.getString("fileOriginalName"));
+                file.setFilePath(resultSet.getString("filePath"));
+                file.setContentIdHaveFile(resultSet.getInt("contentIdHaveFile"));
+                filesEntities.add(file);
+            }
+        }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return filesEntities;
     }
 }

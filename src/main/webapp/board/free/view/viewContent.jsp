@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.study.connection.entity.CommentsEntity" %>
+<%@ page import="com.study.connection.entity.FilesEntity" %>
 <%@ page import="java.util.List" %>
 <style>
     @font-face {
@@ -198,6 +199,14 @@
     #deleteModalContent{
         width: 85%;
     }
+    #filesDiv{
+        display: flex;
+        flex-direction: column;
+        padding: 0px 15px;
+        margin: 0px 15px 10px 15px;
+        font-size: 14px;
+        gap: 5px;
+    }
 </style>
     <h4 style="margin: 0px;margin-bottom: 2em;">게시판 - 보기</h4>
     <div>
@@ -217,6 +226,19 @@
         </div>
         <div id="contentText">
             <%=request.getAttribute("content")%>
+        </div>
+        <div id="filesDiv">
+            <c:if test='<%=request.getAttribute("files") != null%>'>
+                <c:forEach var="file" items='<%=(List<FilesEntity>) request.getAttribute("files")%>'>
+                    <span>
+                        <i class="bi bi-download"></i>
+                        <a style="cursor: pointer;margin-left: 10px;"
+                            onclick="downloadFile('${file.fileName}', '${file.filePath}')">
+                            ${file.fileName}
+                        </a>
+                    </span>
+                </c:forEach>
+            </c:if>
         </div>
     </div>
     <div id="CommentBlock">
