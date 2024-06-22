@@ -43,6 +43,21 @@
                 }
             }
         }
+        function movePage(page){
+            let href = window.location.href.replace("http://localhost:8080" , "");
+            if (href.includes("index.jsp") == false) href = href + "index.jsp";
+            href = href.replaceAll(/&?page=[0-9]+&?/gi , "");
+            if (href.includes("?") && href.includes("&")) href = href + "&page=" + page;
+            else{
+                if (href.includes("?")){
+                    const hrefSplit = href.split("?");
+                    if(hrefSplit[1].length > 1) href = href + "&page=" + page;
+                    else href = href + "page=" + page;
+                }
+                else href = href + "?page=" + page;
+            }
+            return location.href = href;
+        }
     </script>
 
 </head>
@@ -50,7 +65,7 @@
 <script type="text/javascript">
 
 function boardInitFetch() {
-	fetch("board/free/list/boardProcess.jsp?status=init", {
+	fetch("board/free/list/boardProcess.jsp?status=init&page=1", {
 		method: "GET",
 	})
 		.then((response) => response.text())
@@ -114,6 +129,13 @@ function boardFetch() {
         flex-direction: column;
     	gap: 10px;
         padding-top: 2em;
+    }
+    #pagination{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 1em;
+        font-size: 14px;
     }
 </style>
 <div id="init">

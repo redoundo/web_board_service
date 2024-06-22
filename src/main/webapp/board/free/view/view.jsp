@@ -52,17 +52,17 @@
         //목록으로 되돌아간다. 특정 내용이 있는 페이지에서 벗어났기 때문에, content_id=를 삭제한다.
         function moveToBoard() {
             let rowHref = window.location.href;
+            console.log(rowHref);
             if(rowHref.includes("&")) {
                 //content_id 하나만 있는 게 아닐 때.
                 let lists = rowHref.split("?")[1].replace(/&?\??contentId=[0-9]+/g , "").split("&")
-                return location.href = "/index.jsp?" + lists.join("&");
+                return location.href = "http://localhost:8080/eb-study-template-1week/index.jsp?" + lists.join("&");
             }
             if(rowHref.includes("?")) {
                 //content_id 하나만 존재하는 경우.
-                return location.href = rowHref.replace(/\??contentId=[0-9]+/g, "").replace("http://localhost:8080" , "")
-                    .replace("board/free/view/view.jsp" , "index.jsp");
+                return location.href = rowHref.replace(/\??contentId=[0-9]+/g, "").replace("http://localhost:8080" , "").replace("board/free/view/view.jsp" , "eb-study-template-1week/index.jsp");
             }
-            return location.href = rowHref.replace("http://localhost:8080" , "").replace("board/free/view/view.jsp" , "")
+            return location.href = rowHref.replace("http://localhost:8080" , "").replace("board/free/view/view.jsp" , "eb-study-template-1week/index.jsp");
         }
         //수정 페이지로 넘어간다. location.href로 진행되기에 쿼리스트링에 포함된 content_id로 다시 한번 내용을 불러와야한다.
         function goToAdjust() {

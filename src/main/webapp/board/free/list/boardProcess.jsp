@@ -11,15 +11,24 @@
     //TODO : 3번은 검색 후 글 작성 후 다시 검색되어져 있는 목록으로 돌아오기 위한 기능이다. 이런 기능이 있어야 하는건지 아니면 과한 것인지 물어보자.
     request.setCharacterEncoding("UTF-8");
     //최초 화면 여부를 알려주는 변수.
-    String status = "init";
+    String status = request.getParameter("status");
+    System.out.println("status " + status);
+    System.out.println("page " + request.getParameter("page"));
     List<String> conditionsList = new ArrayList<>();
-
+    List<String> queryStringList = new ArrayList<>();
+    String start = request.getParameter("start");
+    String end = request.getParameter("end");
+    String pageLimit = "";
     //현재 url에 있는 파라미터를 가지고 와 sql문을 생성시킨다.
-    if (request.getParameter("end") != null || request.getParameter("start") != null) {
-        if (request.getParameter("end") != null && request.getParameter("start") != null) {
-            conditionsList.add("submitDate BETWEEN" + "STR_TO_DATE('" + request.getParameter("start") + "','%Y.%m.%d %H:%i') AND STR_TO_DATE('" + request.getParameter("end") + "','%Y.%m.%d %H:%i')");
+    if (end != null || start != null) {
+        if (end != null && start != null) {
+            queryStringList.add("end=" + end);
+            queryStringList.add("start=" + start);
+            conditionsList.add(" submitDate BETWEEN " + "STR_TO_DATE('" + start + "','%Y-%m-%d') AND STR_TO_DATE('" + end + "','%Y-%m-%d')");
         } else {
-            conditionsList.add("submitDate=STR_TO_DATE('" + request.getParameter("start") == null ? request.getParameter("end") : request.getParameter("start"));
+            if(start == null) queryStringList.add("end=" + end);
+            else queryStringList.add("start=" + start);
+            conditionsList.add(" submitDate=STR_TO_DATE('" + start == null ? end : start + "','%Y.%m.%d') ");
         }
     } else {
         //1,2,3 모두 쿼리스트링에 특정 content_id가 있을 이유가 없다. 때문에 존재하더라도 추가하지 않는다.
@@ -28,21 +37,27 @@
             for (String param : request.getParameterMap().keySet()) {
                 String paramValue = request.getParameter(param);
                 //화면 상태에 따라 함수 적용을 달리 할 예정이기에 따로 분기점을 만들었다.
-                if (Objects.equals(param, "status")) {
+                if(Objects.equals(param, "category")){
+                    //태그 이름은 category이지만 실제로는 int인 content_category_id로 int는 '' 있으면 오류가 나기 때문에 따로 처리.
+                    if (!paramValue.isEmpty()) {
+                        //전체 카테고리는 빈 문자열이고 조건문으로 넣을 필요가 없다.
+                        conditionsList.add(param + "=" + paramValue);
+                        queryStringList.add(param + "=" + paramValue);
+                    }
+                } else if (Objects.equals(param, "keyword")) {
+                     //TODO : 간단하게 like를 사용했으나 regexp를 사용해보는건 어떨까.
+                     conditionsList.add("title like '%" + paramValue + "%'");
+                     queryStringList.add("keyword=" + paramValue);
+
+                } else if (Objects.equals(param, "page")){
+                    Integer intVal = Integer.parseInt(paramValue);
+                    Integer startPage = (intVal - 1) *10;
+                    request.setAttribute("page", paramValue);
+                    pageLimit = " LIMIT " + startPage.toString() + ", 10";
+                    queryStringList.add("page=" + paramValue);
+                } else {
                     if (!Objects.equals(paramValue, "init")) {
                         status = paramValue;
-                    }
-                } else {
-                    //status가 아닌 경우 전부 조건이다.
-                    if (Objects.equals(param, "category")) {
-                        //태그 이름은 category이지만 실제로는 int인 content_category_id로 int는 '' 있으면 오류가 나기 때문에 따로 처리.
-                        if (!paramValue.isEmpty()) {
-                            //전체 카테고리는 빈 문자열이고 조건문으로 넣을 필요가 없다.
-                            conditionsList.add(param + "=" + paramValue);
-                        }
-                    } else if (Objects.equals(param, "keyword")) {
-                        //TODO : 간단하게 like를 사용했으나 regexp를 사용해보는건 어떨까.
-                        conditionsList.add("title like '%" + paramValue + "%'");
                     }
                 }
             }
@@ -67,6 +82,7 @@
                 request.setAttribute("status", status);
                 request.setAttribute("total", contents.size());
                 request.setAttribute("contents", contents);
+                System.out.println("total count:  " + contents.size());
                 System.out.println(contents.get(0).getContent());
             } else {
                 //total으로 forEach 태그를 사용해야할지 여부를 확인한다.
@@ -80,21 +96,26 @@
         //2,3번 처리 과정.
         try {
             String conditions = String.join(" AND ", conditionsList);
+            System.out.println("conditions sql: conditions list  - " + conditions);
+            //게시글의 총 개수를 구하기 위해 limit 조건을 붙이기 전에 먼저 total 을 가져온다.
+            Integer total = dbActions.lectureCountByConditions(conditions);
+            request.setAttribute("total", total);
+            System.out.println("total count:  " + total);
+
+            if (pageLimit != null && pageLimit != "" && pageLimit.length() > 1)
+                conditions = conditions + pageLimit;
+            System.out.println("sql conditions:  " + conditions);
             List<ContentsEntity> contents = dbActions.returnFullContents(conditions);
             request.setAttribute("status", status);
-            request.setAttribute("total", contents.size());
             request.setAttribute("contents", contents);
         } catch (Exception e) {
             System.out.println("conditionalSearchError" + e.getMessage());
             request.setAttribute("total", null);
         }
-
-        //index.jsp가 board.jsp를 가지고 있을 때는 /로 이동, 아닐 때는 /board/free/list...으로 이동해야한다.
-        //TODO : 이렇게 파라미터를 포함하고 보내본적이 없어서 이게 오류를 발생시킬지 아닐지는 모르겠다. 오류가 난다면 다른 방법을 강구해야한다.
     }
-    System.out.println(request.getRequestURL().toString());
-    System.out.println(request.getAttribute("contents"));
-    RequestDispatcher dispatcher = request.getRequestDispatcher("/board/free/list/board.jsp");
-            //(request.getRequestURL().toString().replace("http://localhost:8080/" , "").replace("boardProcess.jsp" , "board.jsp"));
+    String href = "board.jsp";
+    if(queryStringList.size() > 0) href = href + "?" + String.join("&", queryStringList);
+    System.out.println("href   : " + href +  "request url" + request.getRequestURL().toString());
+    RequestDispatcher dispatcher = request.getRequestDispatcher (href);
     dispatcher.include(request, response);
 %>

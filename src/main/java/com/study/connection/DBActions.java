@@ -21,7 +21,9 @@ public class DBActions {
         try( Connection connection = new DBConnection().getConnection() ){
             String sql = "SELECT " + this.fullContentSelect + "FROM contents";
             if(conditions != null && !conditions.isEmpty()){
-                sql = sql + " WHERE " + conditions;
+                if(conditions.matches(" LIMIT [0-9]+, 10"))
+                    sql = sql + conditions;
+                else sql = sql + " WHERE " + conditions;
             }
             ResultSet resultSet = connection.createStatement().executeQuery( sql );
             while(resultSet.next()){
@@ -134,5 +136,20 @@ public class DBActions {
             throw new RuntimeException(e);
         }
         return filesEntities;
+    }
+
+    public Integer lectureCountByConditions(String conditions){
+        Integer count = 0;
+        try(Connection connection = new DBConnection().getConnection()) {
+            String sql = "SELECT COUNT(*) AS count FROM contents ";
+            if(conditions != null && !conditions.isEmpty() && !conditions.equals("null")) sql = sql + " WHERE " + conditions;
+            ResultSet resultSet = connection.createStatement().executeQuery(sql);
+            while(resultSet.next()){
+                count = resultSet.getInt("count");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return count;
     }
 }

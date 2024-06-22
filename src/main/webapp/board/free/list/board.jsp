@@ -188,7 +188,7 @@
                     </span>
                 </div>
             </form>
-            <input form="OptForm" type="submit" id="OptFormSearch" value="검색" formmethod="get" formaction="boardProcess.jsp"/>
+            <input form="OptForm" type="submit" id="OptFormSearch" value="검색" formmethod="get" formaction="index.jsp"/>
         </div>
     </div>
     <div id='Result'>
@@ -241,3 +241,4 @@
         등록
     </button>
 </div>
+<%@include file="pagination.jsp"%>

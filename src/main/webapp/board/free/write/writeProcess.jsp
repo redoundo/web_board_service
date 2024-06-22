@@ -39,43 +39,31 @@
                         title = fieldValue;
                         System.out.println("title: " + title);
                         request.setAttribute("title", title);
-                    }else {
-                        if(fieldName.equals("writeContent")) {
-                            content = fieldValue;
-                            System.out.println("content: " + content);
-                            request.setAttribute("content", content);
-                        }else {
-                            if(fieldName.equals("provePassword") ||fieldName.equals("password")){
-                                password = fieldValue;
-                                System.out.println("provePassword: " + content);
-                            }
-                            else{
-                                if(fieldName.equals("writeCategory")) {
-                                categoryId = fieldValue;
-                                System.out.println("writeCategory: " + categoryId);
-                                request.setAttribute("categoryId", categoryId);}
-                            }
-                        }
+                    }else if(fieldName.equals("writeContent")) {
+                        System.out.println("content: " + content);
+                        request.setAttribute("content", content);
+                    }else if(fieldName.equals("provePassword") ||fieldName.equals("password")){
+                        password = fieldValue;
+                    } else{
+                        if(fieldName.equals("writeCategory")) {
+                        categoryId = fieldValue;
+                        request.setAttribute("categoryId", categoryId);}
                     }
-
                 }
             } else {
                 // 파일 필드 처리
                 FilesEntity entity = new FilesEntity();
                 String fieldName = item.getFieldName();
-                System.out.println("fieldName: " + fieldName);
                 String fileName = item.getName();
-                System.out.println("fileName: " + fileName);
                 if(fileName != null && fileName != "null" && fileName.length() > 0){
                     entity.setFileName(fileName);
                     entity.setFileOriginalName(fileName);
                     String fileExtension = fileName.substring(fileName.lastIndexOf(".")); // 파일 확장자
                     entity.setFileExtension(fileExtension);
-                    String uploadPath =  "C:/Users/admin/file" + File.separator + fileName; // 업로드할 물리경로
+                    String uploadPath =  "C:/Users/admin/file/" + fileName; // 업로드할 물리경로
                     System.out.println("uploadPath: " + uploadPath);
                     entity.setFilePath(uploadPath);
                     int sizeInBytes = (int) item.getSize();
-                    System.out.println("sizeInBytes: " + sizeInBytes);
                     entity.setFileVolume(sizeInBytes);
                     InputStream inputStream = item.getInputStream();
                     try (FileOutputStream outputStream = new FileOutputStream(uploadPath)) {

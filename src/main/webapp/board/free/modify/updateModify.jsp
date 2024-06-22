@@ -27,27 +27,21 @@
                         System.out.println("nickname String: " + nickname);
                         stringList.add("nickname='" + fieldValue + "'");
                         System.out.println("nickname: " + stringList);
+                    } else if(fieldName.equals("modifyTitle")) {
+                        title = fieldValue;
+                        System.out.println("title: " + title);
+                        stringList.add("title='%" + fieldValue + "%'");
+                        System.out.println("modifyTitle: " + stringList);
+                    } else if(fieldName.equals("modifyContent")) {
+                        content = fieldValue;
+                        System.out.println("content: " + content);
+                        stringList.add("content='%" + fieldValue + "%'");
+                        System.out.println("modifyContent: " + stringList);
                     }else {
-                        if(fieldName.equals("modifyTitle")) {
-                            title = fieldValue;
-                            System.out.println("title: " + title);
-                            stringList.add("title='%" + fieldValue + "%'");
-                            System.out.println("modifyTitle: " + stringList);
-
-                        }else {
-                            if(fieldName.equals("modifyContent")) {
-                                content = fieldValue;
-                                System.out.println("content: " + content);
-                                stringList.add("content='%" + fieldValue + "%'");
-                                System.out.println("modifyContent: " + stringList);
-                            }else {
-                                contentId = fieldValue;
-                                System.out.println("contentId: " + contentId);
-                                stringList.add("WHERE contentId=" + fieldValue + ";");
-                                System.out.println("contentId" + stringList);
-                            }
-                        }
-
+                        contentId = fieldValue;
+                        System.out.println("contentId: " + contentId);
+                        stringList.add("WHERE contentId=" + fieldValue + ";");
+                        System.out.println("contentId" + stringList);
                     }
                 } else {
                     // 파일 필드 처리
