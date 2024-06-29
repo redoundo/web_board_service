@@ -4,8 +4,6 @@ import com.study.connection.dto.*;
 import com.study.connection.service.CategoryService;
 import com.study.connection.service.ContentService;
 import com.study.connection.utils.QueryStringMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static com.study.connection.utils.CheckValid.checking;
 
@@ -28,7 +25,6 @@ import static com.study.connection.utils.CheckValid.checking;
 public class GetContentController {
     @Autowired
     private ContentService service;
-    private final Logger logger = LoggerFactory.getLogger(GetContentController.class);
     /**
      * 처음 렌더 후의 페이지 , 검색 후 결과 페이지 , 다른 곳에서 쿼리스트링을 포함한 채로 이동했을 때 호출됨.
      * @param model index.html
@@ -70,7 +66,6 @@ public class GetContentController {
         model.addAttribute("contentCategoryId" , condition.getContentCategoryId());
         model.addAttribute("page" , condition.getPage());
 
-        logger.debug("Model :    {}" , model);
         return "index";
     }
     /**

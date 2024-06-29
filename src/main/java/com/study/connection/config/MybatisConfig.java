@@ -5,15 +5,18 @@ import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 
 @Configuration
 @MapperScan(basePackages = {"com.study.connection.mapper"})
+@PropertySource("classpath:application.properties")
 public class MybatisConfig {
 
     @Value("${spring.datasource.driver-class-name}")
@@ -24,33 +27,31 @@ public class MybatisConfig {
     private String url;
     @Value("${spring.datasource.username}")
     private String userName;
+
     @Bean
-    public DataSource dataSource() {
-        return DataSourceBuilder.create()
-                .driverClassName(driverName)
-                .password(password)
-                .url(url)
-                .username(userName)
-                .build();
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
+        SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(dataSource());
+        sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/*.xml"));
+        return sessionFactory.getObject();
     }
 
     @Bean
-    public SqlSessionFactory sqlSessionFactory () throws Exception{
-        SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
-        bean.setDataSource(dataSource());
-        bean.setConfigLocation(new PathMatchingResourcePatternResolver().getResource("/mybatis-config.xml"));
-        bean.setMapperLocations(
-                new PathMatchingResourcePatternResolver().getResource("/mapper/CategoryMapper.xml")
-                ,new PathMatchingResourcePatternResolver().getResource("/mapper/ContentMapper.xml")
-                ,new PathMatchingResourcePatternResolver().getResource("/mapper/FileMapper.xml")
-                ,new PathMatchingResourcePatternResolver().getResource("/mapper/CommentMapper.xml")
-        );
-        return bean.getObject();
+    public DataSource dataSource(){
+        DriverManagerDataSource source = new DriverManagerDataSource();
+        source.setDriverClassName(driverName);
+        source.setPassword(password);
+        source.setUrl(url);
+        source.setUsername(userName);
+        return source;
     }
 
     @Bean
-    public SqlSessionTemplate sqlSessionTemplate(SqlSessionFactory factory){
-        return new SqlSessionTemplate(factory);
+    public DataSourceTransactionManager transactionManager() {
+        return new DataSourceTransactionManager(dataSource());
     }
+//    @Bean
+//    public SqlSessionTemplate sqlSessionTemplate() throws Exception {
+//        return new SqlSessionTemplate(sqlSessionFactory());
+//    }
 }
-

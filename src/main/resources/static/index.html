@@ -25,9 +25,11 @@
             <label>
                 <select id="CategoryOpt" name="category" th:if="${ categories.size() > 0}">
                     <option value=null>전체 카테고리</option>
-                    <option  th:each="category : ${categories}" th:value="${category.getCategoryId()}" th:text="${category.getCategoryName()}"/>
+                    <option  th:each="category : ${categories}" th:value="${category.getCategoryId()}" >
+                        [[${category.getCategoryName()}]]
+                    </option>
                 </select>
-                <select  th:unless="${categories != null}">
+                <select th:unless="${categories != null}">
                     <option value=null>전체 카테고리</option>
                 </select>
             </label>
@@ -83,8 +85,8 @@
             </tbody>
         </table>
     </div>
-    <!--    <div th:replace="~{paginantion.html :: pagination}"></div>-->
-    <div id="creatContentDiv">
+        <div th:replace="~{paginantion.html :: pagination}"></div>
+    <div id="createContentDiv">
         <button type="button" onclick="goBack('/write.html')">등록</button>
     </div>
 </div>

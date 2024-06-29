@@ -6,8 +6,6 @@ import com.study.connection.mapper.ContentMapper;
 import com.study.connection.utils.Encrypt;
 import com.study.connection.utils.LoadFiles;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +29,6 @@ public class ContentService {
     @Autowired
     private CommentService commentService;
 
-    private final Logger logger = LoggerFactory.getLogger(ContentService.class);
     /**
      * content 와 file 을 저장한다.
      * @param entity 저장하려는 내용.

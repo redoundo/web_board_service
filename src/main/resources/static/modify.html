@@ -27,8 +27,10 @@
         </div>
         <div>
             <span><label for="changeNickname">작성자*</label></span>
-            <span><input id="changeNickname" required th:value="${content.getNickname()}" value="-" minlength="2"
-                         maxlength="20"/></span>
+            <span>
+                <input id="changeNickname" required th:value="${content.getNickname()}"
+                         value="-" minlength="2" maxlength="20"/>
+            </span>
         </div>
         <div>
             <span><label for="checkPasswordForModify">비밀번호*</label></span>
@@ -41,9 +43,10 @@
         </div>
         <div>
             <span><label for="changeTitle">제목*</label></span>
-            <span><input type="text" id="changeTitle" name="title" required th:value="${content.getTitle()}"
-                         minlength="3"
-                         maxlength="70"/></span>
+            <span>
+                <input type="text" id="changeTitle" name="title" required th:value="${content.getTitle()}"
+                         minlength="3" maxlength="70"/>
+            </span>
         </div>
         <div>
             <span><label for="changeContent">내용*</label></span>
@@ -60,7 +63,11 @@
                             <span>파일</span>
                             <span th:text="${file.getFileName()}">-</span>
                             <span><input type="submit" value="DOWNLOAD"/></span>
-                            <span><button th:id="|buttonnotFile${fileStat.count}|" type="button" onclick="deleteMySelf(this.id)">지우기</button></span>
+                            <span>
+                                <button th:id="|buttonnotFile${fileStat.count}|" type="button" onclick="deleteMySelf(this.id)">
+                                    지우기
+                                </button>
+                            </span>
                         </span>
                     </form>
                 </th:block>
@@ -73,7 +80,8 @@
     </form>
     <span>
         <button type="button" onclick="goBack('/view.html')">취소</button>
-        <input type="submit" form="modifyForm" onsubmit="checkPassword()" formaction="update" formenctype="multipart/form-data" value="저장"/>
+        <input type="submit" form="modifyForm" onsubmit="checkPassword()"
+               formaction="update" formenctype="multipart/form-data" value="저장"/>
     </span>
 </div>
 <script th:inline="javascript">

@@ -11,9 +11,6 @@ import com.study.connection.utils.Encrypt;
 import com.study.connection.utils.LoadFiles;
 import com.study.connection.utils.QueryStringMapper;
 import jakarta.servlet.annotation.MultipartConfig;
-import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,7 +36,6 @@ import static com.study.connection.utils.CheckValid.checking;
 public class ChangeContentController {
     @Autowired
     private ContentService service;
-    private final Logger logger = LoggerFactory.getLogger(ChangeContentController.class);
 
     /**
      * 내용 수정.
@@ -147,7 +143,6 @@ public class ChangeContentController {
             ,@ModelAttribute FilePartDto fileDto) {
         String to = "redirect:/view";
         try {
-            logger.debug("insertContent :   {}", params);
             InsertContent insertEntity = InsertContent.builder()
                     .password(new Encrypt().Encryption(params.get("password").toString()))
                     .submitDate(Date.valueOf(LocalDateTime.now().format(DateTimeFormatter.ofPattern("y-M-d"))))
