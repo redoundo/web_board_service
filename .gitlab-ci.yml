@@ -1,0 +1,31 @@
+stages:
+  - deploy
+
+cache:
+  paths:
+    - .gradle/wrapper
+
+deploy:
+  stage: deploy
+  before_script:
+    - apt-get update
+    - apt install sudo
+    - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    - unzip awscliv2.zip
+    - sudo ./aws/install
+    # aws 설정
+    - aws configure set aws_access_key_id $AWS_LAMBDA_ACCESS_KEY
+    - aws configure set aws_secret_access_key $AWS_LAMBDA_SECRET_ACCESS_KEY
+    - aws configure set default.region $AWS_LAMBDA_REGION
+    # zip 압축 후에도 파일 크기가 50MB 가 넘어, s3 를 경유해야 lambda 함수 업데이트가 가능해짐.
+    - aws s3 cp build/distributions/eb-study-template-1week-1.0-SNAPSHOT.zip s3://new-lambda-buket/lambda/web_board_service.zip
+
+  script:
+    # s3 에서 업데이트 한 zip 파일로 함수 업데이트 진행
+    - aws lambda update-function-code --function-name ApplicationWithLambda --s3-bucket new-lambda-buket --s3-key lambda/web_board_service.zip --region ap-northeast-2
+    # snap start 를 이용하기 위해 새 버전 발행 및 새 버전의 숫자 가져오기
+    - VERSION=$(aws lambda publish-version --function-name ApplicationWithLambda --query 'Version' --output text)
+    # 별칭 업데이트
+    - aws lambda update-alias --function-name ApplicationWithLambda --name lambda-version-1 --function-version $VERSION
+  only:
+    - fifth
