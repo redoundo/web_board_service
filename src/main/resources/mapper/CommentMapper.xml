@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.CommentMapper">
+    <insert id="insertComment" parameterType="com.study.connection.entity.CommentEntity"
+            useGeneratedKeys="true" keyProperty="answerId" keyColumn="answerId">
+        INSERT INTO answers(userId , answer , postId, postTable)
+        VALUES(#{userId} , #{answer} , #{postId}, #{postTable})
+    </insert>
+    <select id="selectComments" parameterType="java.lang.Integer" resultType="commentDto">
+        SELECT answer , postId, userId, answerId, submitDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=answers.userId
+        ) AS nickname
+        FROM answers
+        WHERE postId=#{id}
+    </select>
+    <delete id="deleteComments" parameterType="java.lang.Integer">
+        DELETE FROM answers
+        WHERE postId=#{id}
+    </delete>
+    <select id="getInsertedComment" parameterType="com.study.connection.entity.CommentEntity" resultType="commentDto">
+        SELECT answer, postId, userId, answerId, submitDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=answers.userId
+        ) AS nickname
+        FROM answers
+        WHERE userId=#{userId} AND answer=#{answer} AND postId=#{postId}
+    </select>
+    <delete id="deleteAComment">
+        DELETE FROM answers
+        WHERE userId=#{userId} AND answerId=#{answerId} AND postId=#{postId}
+    </delete>
+</mapper>

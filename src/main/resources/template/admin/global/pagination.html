@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <span style="display: flex; flex-direction: row; justify-content: center; margin-top: 0.75rem;"
+          th:fragment="pagination(page, total, maxCount)">
+        <span style="margin-left: 2.5rem" th:if="${total != null}">
+        <!--맨 앞으로 가는 버튼 시작-->
+            <button style="font-size: 11px; margin-right: 10px" type="button" class="toFirst" onclick="parseUrl('', 'page', 0)">
+                <<
+            </button>
+        <!--맨 앞으로 가는 버튼 끝-->
+        <!--앞으로 가는 버튼 시작-->
+            <button style="font-size: 11px; margin-right: 10px"th:if="${page > 0}" type="button"
+                    class="toBefore" th:onclick="parseUrl('', 'page', [[${page - 1}]])">
+                <
+            </button>
+        <!--앞으로 가는 버튼 시작 끝-->
+        </span>
+        <!--페이지 버튼 시작-->
+        <span style="margin-left: 2.5rem" th:if="${total != null && (total / maxCount) >= 1}" th:each="num : ${#numbers.sequence(1 , total / maxCount)}">
+            <button style="font-size: 11px; margin-right: 10px" th:class="${page != null && page == numStat.count ? 'pageButton active' : 'pageButton'}"
+                    type="button" th:onclick="parseUrl('', 'page', [[${numStat.count}]])"
+                    th:text="${numStat.count}"></button>
+        </span>
+        <span style="margin-left: 2.5rem" th:if="${total == null || (total / maxCount) < 1}">
+            <button style="font-size: 11px; margin-right: 10px" class="pageButton" type="button" disabled>1</button>
+        </span>
+        <!--페이지 버튼 끝-->
+        <span style="margin-left: 2.5rem" th:if="${total != null }">
+            <!--뒤로 가는 버튼 시작-->
+            <button style="font-size: 11px; margin-right: 10px" th:if="${total != null && page != total}" type="button" class="toNext" th:onclick="parseUrl('', 'page', [[${page + 1}]])">
+                >
+            </button>
+            <!--뒤로 가는 버튼 끝-->
+            <!--맨 뒤로 가는 버튼 시작-->
+            <button style="font-size: 11px; " type="button" class="toLast" th:onclick="parseUrl('' ,'page', [[${total / maxCount}]])">
+                >>
+            </button>
+            <!--맨 뒤로 가는 버튼 끝-->
+        </span>
+    </span>
+</body>
+</html>

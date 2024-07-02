@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.QuestionMapper">
+    <sql id="conditionQuery">
+        WHERE submitDate BETWEEN #{start} AND #{end}
+        <if test="keyword != null and !keyword.isEmpty and keyword != 'null'">
+            AND (
+            title LIKE '%'||#{keyword}||'%'
+            OR content LIKE '%'||#{keyword}||'%'
+            OR (SELECT users.userId FROM users WHERE users.nickname LIKE '%'||#{keyword}||'%')
+                AS user=#{keyword}
+            )
+        </if>
+        <if test="userId != null and userId >= 0">
+            AND userId=#{userId}
+        </if>
+    </sql>
+    <select id="getAllQuestions" parameterType="searchCondition" resultType="java.util.Map">
+        SELECT questionId, title,
+               (SELECT IF(COUNT(*) > 0, true, false)
+                FROM answers
+                WHERE answers.postId=questions.questionId
+                ) AS isAnswered,
+               viewCount, submitDate, content, userId,
+                IF(locked=1, true, false) AS locked
+        FROM questions
+        <include refid="conditionQuery"/>
+        ORDER BY #{orderByColumn}
+        <if test="orderByDesc">
+            DESC
+        </if>
+        LIMIT #{page}, #{maxCount}
+    </select>
+    <select id="allQuestionsTotalCount" parameterType="searchCondition" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS count
+        FROM questions
+        <include refid="conditionQuery"/>
+    </select>
+    <select id="getQuestionByQuestionId" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT title, content, viewCount,
+               submitDate, userId, questionId,
+               IF(locked > 0, true, false) AS isLocked,
+               (SELECT IF(COUNT(*) > 0, true, false)
+                FROM answers
+                WHERE answers.postId=questions.questionId
+               ) AS isAnswered
+        FROM questions
+        WHERE questionId=#{id}
+    </select>
+    <select id="totalCount" resultType="java.lang.Integer">
+        SELECT Count(*) AS total
+        FROM questions
+    </select>
+    <select id="limitedQuestions" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT title, content, viewCount,
+                submitDate,
+                (SELECT users.nickname
+                FROM users
+                WHERE users.userId=questions.userId
+                ) AS nickname,
+                IF(locked > 0, true, false) AS isLocked,
+                (SELECT IF(COUNT(*) > 0, true, false)
+                FROM answers
+                WHERE answers.postId=questions.questionId AND answers.postTable='question'
+                ) AS isAnswered
+        FROM questions
+        ORDER BY submitDate DESC
+        LIMIT 0, #{limit}
+    </select>
+    <insert id="insertNewQuestion" parameterType="insertQuestion" useGeneratedKeys="true">
+        INSERT INTO questions(title, content, userId, locked)
+        VALUES (#{title}, #{content}, #{userId}, #{isLocked})
+    </insert>
+    <select id="getInsertedQuestionId" parameterType="insertQuestion" resultType="java.lang.Integer">
+        SELECT questionId
+        FROM questions
+        WHERE userId=#{userId} AND locked=#{isLocked} AND title=#{title} AND content=#{content}
+    </select>
+    <update id="updateViewCount">
+        UPDATE questions
+        SET viewCount = viewCount + 1
+        WHERE questionId = #{id}
+    </update>
+    <update id="updateQuestion" parameterType="insertQuestion">
+        UPDATE questions
+        SET title=#{title}, content=#{content}, locked=#{isLocked}
+        WHERE questionId=#{questionId}
+    </update>
+    <delete id="deleteQuestion">
+        DELETE FROM questions
+        WHERE questionId=#{questionId} AND userId=#{userId}
+    </delete>
+</mapper>

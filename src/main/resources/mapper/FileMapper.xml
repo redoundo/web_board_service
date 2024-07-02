@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.FileMapper">
+    <insert id="insertFiles">
+        INSERT INTO images(imageName , imageOriginalName , imagePath , postTable,
+        postId , imageVolume , imageExtension)
+        VALUES
+        <foreach collection="entities" nullable="false" item="item" separator=",">
+            (#{item.imageName} , #{item.imageOriginalName} , #{item.imagePath} , #{item.postTable},
+            #{item.postId} , #{item.imageVolume} ,#{item.imageExtension})
+        </foreach>
+    </insert>
+    <delete id="deleteFilesByContentId" parameterType="java.lang.Integer">
+        DELETE FROM images
+        WHERE postId=#{id};
+    </delete>
+    <select id="selectFiles" parameterType="java.lang.Integer" resultType="FileDto">
+        SELECT imageName,imageOriginalName,imagePath, imageId
+        FROM images
+        WHERE postId=#{id}
+    </select>
+    <select id="existFileByPostId" parameterType="java.lang.Integer" resultType="imageEntity">
+        SELECT imageName , imageOriginalName , imagePath ,
+            postTable, postId , imageVolume , imageExtension
+        FROM images
+        WHERE postId=#{id}
+    </select>
+    <delete id="deleteByFileId" parameterType="java.lang.Integer">
+        DELETE
+        FROM images
+        WHERE imageId=#{id}
+    </delete>
+    <select id="getFileIds" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT fileId
+        FROM images
+        WHERE postId=#{id}
+    </select>
+</mapper>

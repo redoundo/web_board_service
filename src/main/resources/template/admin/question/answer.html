@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: answerView})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="margin-top: 15px" class="writeFirstBlock" th:fragment="answerView"
+         th:object="${results}" th:with="contents=${result.get('contents')}">
+        <span class="writeHeadTitle">문의게시판 관리</span>
+        <form class="fillTheseBoxes" id="answerForm" onsubmit="checkContentLength('writeAnswer', 5, null)">
+            <span class="aDetail" style="border-top: 2px solid gainsboro;">
+                <span class="aDetailName" >
+                    제목*
+                </span>
+                <span class="aDetailValue">
+                    <input name="title" class="grow" placeholder="제목을 입력해 주세요" style=" font-size: small;padding: 3px 10px;"
+                           th:value="|${contents.get('title')} (${contents.get('isAnswered')? '답변완료': '미답변'})|"/>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 질문* </span>
+                <span class="aDetailValue">
+                    <textarea name="content" required placeholder="질문을 입력해 주세요"
+                              style=" font-size: small; outline: none; resize: none; height: 150px; padding: 5px; "
+                              th:value="${contents.get('content')}" class="grow">
+                    </textarea>
+				 </span>
+            </span>
+            <span class="aDetail"
+                  th:with="comment=${result.get('comments')}">
+                <span class="aDetailName"> 답변 </span>
+                <span class="aDetailValue">
+                    <textarea name="answer" placeholder="답변을 입력해 주세요" th:value="${comment}"
+                              style=" font-size: small; outline: none; resize: none; height: 150px; padding: 5px; "
+                              required maxlength="399">
+                    </textarea>
+                </span>
+            </span>
+            <input type="hidden" name="userId" th:value="${contents.get('userId')}"/>
+            <input type="hidden" name="isLocked" th:value="${contents.get('isLocked')}" />
+            <input type="hidden" name="questionId" th:value="${contents.get('questionId')}"/>
+        </form>
+        <span class="buttons" th:with="answerDelete = ${@environment.getProperty('server.endpoint')} + '/api/admin/question/answer/delete'">
+            <input class="ok" type="submit" form="answerForm"
+                   th:formaction="${@environment.getProperty('server.endpoint')} + '/admin/question/answer/update'"
+                       value="답변완료" onsubmit="checkContentLength('writeAnswer', 5, null)"/>
+            <button class="goBack" type="button"
+                    th:onclick="deleteQueryString('/admin/question', true, [[${param.contentId}]][0])">
+                목록
+            </button>
+            <button class="deleteButton" type="button"
+                    th:onclick="askConfirm('삭제')? requesting.post({path: [[${answerDelete}]],
+                     data: {'contentId': [[${contents.get('questionId')}]], 'userId': [[${contents.get('userId')}]]},
+                      success: deleteSuccess, error: onError})
+                    : null">
+                삭제
+            </button>
+        </span>
+
+        <script th:inline="javascript">
+            function deleteSuccess(val){
+                alert("게시글이 삭제 되었습니다.");
+                goTo("question/answer", "question", 'delete', "contentId", [[${param.contentId}]][0])
+            }
+        </script>
+    </div>
+</body>
+</html>

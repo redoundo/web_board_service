@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="display: flex; justify-content: center;">
+        <div style="display: flex; flex-direction: column; justify-content: center; margin: 15px; margin-top: 30px; max-width: 500px; min-width: 450px;">
+            <span style="text-align: center; padding: 10px;">로그인</span>
+            <form style="display: flex; flex-direction: column; justify-content: center; gap: 25px;"
+                  method="post" th:action="${@environment.getProperty('server.endpoint')} + '/auth/login/process'">
+                <div style="display: flex; flex-direction: column;" >
+                    <span style="display: flex; flex-direction: column; padding: 15px; gap: 10px;">
+                        <label for="insertId">아이디</label>
+                        <input style="padding: 5px; margin-left: 10px; padding-left: 10px;"
+                               id="insertId" type="text" name="id" placeholder="아이디" required/>
+                    </span>
+                    <span style="display: flex; flex-direction: column; padding: 15px; gap: 10px;">
+                        <label for="insertPassword">비밀번호</label>
+                        <input style="padding: 5px; margin-left: 10px; padding-left: 10px;"
+                               id="insertPassword" type="password" name="password" placeholder="비밀번호" required/>
+                    </span>
+                </div>
+                <span style="align-items: center;display: flex; flex-direction: column; justify-content:center;" >
+                     <input style="max-width: 100px; min-width: 50px; border-width: 0px; padding: 10px 20px;border-radius: 6px; color: white; background-color: gainsboro;" type="submit" value="로그인"/>
+                </span>
+            </form>
+        </div>
+        <script th:inline="javascript">
+            if (([[${sessionScope?.errorMessage}]]??null) !== null) {
+                console.log([[${sessionScope?.errorMessage}]])
+                alert([[${sessionScope?.errorMessage}]]);
+            }
+        </script>
+    </div>
+</body>
+</html>

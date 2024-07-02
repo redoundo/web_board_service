@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: boardWrite})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="writeFirstBlock" th:fragment="boardWrite" th:object="${categories}">
+        <span class="writeHeadTitle">자유 게시판 관리</span>
+            <form class="fillTheseBoxes" id="boardWriteForm">
+                <span class="aDetail" style="border-top: 2px solid gainsboro;">
+                    <span class="aDetailName"> 분류* </span>
+                    <span class="aDetailValue">
+                        <select name="categoryId" required style=" font-size: 12px; padding-top: 2.2px;
+                         padding-bottom: 2.2px;flex-grow: 1; max-width: 190px;padding-left: 10px; ">
+                            <option value=null>카테고리 선택</option>
+                            <option th:if="${categories} != null"
+                                    th:each="category: ${categories}"
+                                    th:value="${category.getCategoryId()}"
+                                    th:text="${category.getCategoryName()}">
+                            </option>
+                        </select>
+                    </span>
+                </span>
+                <span class="aDetail">
+                    <span class="aDetailName"> 제목* </span>
+                    <span class="aDetailValue">
+                        <input required class="grow" placeholder="제목을 입력해 주세요" style=" font-size: 12px;padding: 3px 10px;flex-grow: 1;"
+                               type="text" name="title" maxlength="99" />
+                    </span>
+                </span>
+                <span class="aDetail">
+                    <span class="aDetailName"> 내용* </span>
+                    <span class="aDetailValue">
+                        <textarea required name="content" maxlength="3999"
+                                  placeholder="내용을 입력해 주세요" style="height: 90px;flex-grow: 1;">
+                        </textarea>
+                    </span>
+                </span>
+                <div th:replace="~{admin/global/upload::fileUpload(2, 5, null)}"></div>
+            </form>
+        <span>
+            <span class="buttons">
+                <input type="submit" form="boardWriteForm" value="등록" class="ok"
+                       formenctype="multipart/form-data" formmethod="post"
+                       th:formaction="${@environment.getProperty('server.endpoint')} + '/admin/board/write/insert'" />
+                <button type="button" th:onclick="addQueryString('/admin/board', null)" class="goBack">목록</button>
+            </span>
+        </span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.CategoryMapper">
+    <select id="findCategoryName" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT categoryName
+        FROM categories
+        WHERE categoryId=#{id}
+    </select>
+    <select id="allCategories" resultType="categories">
+        SELECT  categoryId , categoryName
+        FROM categories
+    </select>
+    <insert id="insertNotifyCategory" parameterType="java.lang.String">
+        INSERT INTO notifyCategory(categoryName)
+        VALUES(#{name})
+    </insert>
+    <insert id="insertBoardCategory" parameterType="java.lang.String">
+        INSERT INTO categories(categoryName)
+        VALUES(#{name})
+    </insert>
+    <select id="getAllNotifyCategory" resultType="categories">
+        SELECT categoryId, categoryName
+        FROM notifyCategory
+    </select>
+
+</mapper>

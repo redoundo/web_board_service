@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: writeNotify})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="margin-top: 15px" class="writeFirstBlock" th:fragment="writeNotify">
+        <span class="writeHeadTitle">공지사항 관리</span>
+        <form class="fillTheseBoxes" id="writeNotify" onsubmit="askConfirm('등록')" enctype="application/x-www-form-urlencoded">
+            <span class="aDetail" th:object="${categories}" style="border-top: 2px solid gainsboro;">
+                <span class="aDetailName">
+                    분류*
+                </span>
+                <span class="aDetailValue">
+                    <select style="font-size: 12px; padding-top: 2.2px;
+                        padding-bottom: 2.2px; padding-right: 135px; padding-left: 10px;"
+                            name="categoryId" th:if="${categories} != null" required>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.getCategoryId()}"
+                                th:text="${category.getCategoryName()}">
+                        </option>
+                    </select>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">
+                    제목*
+                </span>
+                <span class="aDetailValue">
+                    <input name="title" placeholder="제목을 입력해 주세요"
+                           style=" font-size: 12px;padding: 3px 10px;flex-grow:1;" type="text" maxlength="99" required/>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">
+                    내용*
+                </span>
+                <span class="aDetailValue">
+                    <textarea name="content" placeholder="내용을 입력해 주세요" class="grow" required
+                              style=" font-size: 12px; outline: none; resize: none; height: 150px; padding: 5px;" >
+                    </textarea>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">상단 고정</span >
+                <span style="flex-basis: 85%; max-width: 200px; padding-left: 15px">
+                    <input name="fixOnTop" type="checkbox" style="min-width: 15px; min-height: 15px; margin-top: 5px" />
+                </span>
+            </span>
+        </form>
+        <span class="flex flex-row justify-center space-x-5 mt-4">
+            <input type="submit" form="writeNotify"
+                   style=" background-color: dimgrey; color: white; padding: 5px;
+                     padding-left: 18px; padding-right: 18px; border-radius: 5px; "
+                   th:formaction="${@environment.getProperty('server.endpoint')} + '/admin/notify/write/insert'" formmethod="post"
+                   onsubmit="askConfirm('등록')" formenctype="application/x-www-form-urlencoded" value="등록"/>
+            <button type="button" style=" background-color: black; color: white; padding: 5px;
+             padding-left: 18px; padding-right: 18px; border-radius: 5px; "
+                    th:onclick="addQueryString('/admin/notify', null)">취소</button>
+        </span>
+    </div>
+</body>
+</html>

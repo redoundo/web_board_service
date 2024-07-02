@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: boardIndex})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="margin-left: 0.75rem; display: flex; flex-direction: column; margin-top:10px" th:fragment="boardIndex"  th:object="${page}" th:with="currentPage = ${page != null? page : 1}">
+        <div th:replace="~{admin/global/searchcondition::searchOptions(${categories},'자유 게시판',  ${@environment.getProperty('server.endpoint')} + '/admin/board')}"></div>
+        <span style=" display: flex; flex-direction: row; justify-content: end; padding-right: 10px; padding-bottom: 7px; ">
+            <button type="button" style=" background-color: #3c3633; color: white; padding-left: 10px;
+             padding-right: 10px; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; "
+                    onclick="addQueryString('/admin/board/write', null)">
+                글 등록
+            </button>
+        </span>
+        <div th:object="${contents}" th:with="currentMaxCount = ${maxCount != null ? maxCount: 10}">
+            <div th:replace="~{admin/global/results::results('board', ${total}, ${currentMaxCount}, ${currentPage}, ${contents})}"></div>
+            <div th:replace="~{admin/global/pagination::pagination(${currentPage}, ${total}, ${currentMaxCount})}"></div>
+        </div>
+    </div>
+</body>
+</html>

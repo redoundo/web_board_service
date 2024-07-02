@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: updateNotify})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div class="updateFirstBlock" th:fragment="updateNotify"
+         th:with="contents=${results.get('contents')}">
+        <span class="updateHeadTitle">공지사항 수정</span>
+        <form class="fillTheseBoxes" id="updateNotify" th:object="${results}" onsubmit="askConfirm('수정')" >
+            <span class="aDetail" style="border-top: 2px solid gainsboro;">
+                <span th:object="${categories}" class="aDetailName" >
+                    분류*
+                </span>
+                <span class="aDetailValue">
+                    <select style="flex-grow: 1; max-width: 200px; font-size: 12px; padding-top: 2.2px; padding-bottom: 2.2px;
+                     padding-right: 135px; padding-left: 10px; "  name="categoryId" th:if="${categories} != null">
+                        <option th:each="category : ${categories}"
+                                th:value="${category.getCategoryId()}"
+                                th:selected="${contents.get('categoryId') == category.getCategoryId()}"
+                                th:text="${category.getCategoryName()}">
+                        </option>
+                    </select>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">
+                    제목*
+                </span>
+                <span class="aDetailValue">
+                    <input name="title" th:value="${contents.get('title')}" class="grow" placeholder="제목을 입력해 주세요"
+                           style=" font-size: 12px;padding: 3px 10px;flex-grow: 1;" type="text" maxlength="99" required/>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">
+                    내용*
+                </span>
+                <span class="aDetailValue">
+                    <textarea name="content" placeholder="내용을 입력해 주세요" class="grow" required
+                              style="flex-grow: 1;font-size: 12px; outline: none; resize: none; height: 150px; padding: 5px;"
+                              maxlength="99">
+                    </textarea>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName">상단 고정</span >
+                <span class="aDetailValue" style="padding-bottom: 5px;">
+                    <input name="fixOnTop" type="checkbox" style="min-width: 15px; min-height: 15px; margin-top: 5px"
+                           th:checked="${contents.get('fixOnTop')}"/>
+                </span>
+            </span>
+            <input type="hidden" name="userId" th:value="${contents.get('userId')}"/>
+        </form>
+        <span>
+            <span class="buttons" th:with="notifyDelete = ${@environment.getProperty('server.endpoint')} + '/api/admin/notify/update/delete'">
+                <input type="submit" form="updateNotify" value="수정" formmethod="post"
+                       th:formaction="${@environment.getProperty('server.endpoint')} + '/admin/notify/update/update'" onsubmit="askConfirm('수정')" class="ok" />
+                <button type="button" class="goBack"
+                        th:onclick="deleteQueryString('/admin/notify', true, [[${param.contentId}]][0])">목록</button>
+                <button type="button" class="deleteButton"
+                        th:onclick="askConfirm('삭제')? requesting.post({path:  [[${notifyDelete}]],
+                        data:{'userId': [[${contents.get('userId')}]], 'contentId': [[${param.contentId}]][0]},
+                         success: deleteSuccess, error: onError})
+                    : null">
+                    삭제
+                </button>
+            </span>
+        </span>
+        <script th:inline="javascript">
+            function deleteSuccess(val){
+                alert("게시글이 삭제 되었습니다.");
+                goTo('notify/update', 'notify', 'delete', 'contentId', [[${param.contentId}]][0])
+            }
+        </script>
+    </div>
+</body>
+</html>

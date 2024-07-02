@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.UserMapper">
+    <select id="findUserByIdPassword" resultType="userEntity">
+        SELECT userId, id, password, nickname, role
+        FROM users
+        WHERE id=#{id} AND password=SHA2(#{password}, 256)
+    </select>
+    <select id="findUserByUserId" parameterType="java.lang.Integer"
+            resultType="userEntity">
+        SELECT userId, id, password, nickname, role
+        FROM users
+        WHERE userId=#{id}
+    </select>
+    <select id="findUserIdById" parameterType="java.lang.String"
+            resultType="java.lang.Integer">
+        SELECT userId
+        FROM users
+        WHERE id=#{id}
+    </select>
+    <select id="isUserExist" resultType="java.lang.Boolean" parameterType="java.lang.String">
+        SELECT IF(COUNT(*)=1, true, false) AS count
+        FROM users
+        WHERE id=#{id}
+    </select>
+    <select id="findUserByNickname" parameterType="java.lang.String"
+            resultType="java.util.Map">
+        SELECT userId, id, password, nickname, role
+        FROM users
+        WHERE nickname=#{nickname}
+    </select>
+    <select id="canUseThisId" parameterType="java.lang.String"
+            resultType="java.lang.Boolean">
+        SELECT IF(COUNT(*) = 0, true, false) AS can
+        FROM users
+        WHERE id=#{id}
+    </select>
+    <insert id="newUser" parameterType="userDto">
+        INSERT INTO users(id, password, nickname)
+        VALUES(#{id}, SHA2(#{password}, 256), #{name})
+    </insert>
+    <delete id="deleteUser" parameterType="java.lang.Integer">
+        DELETE FROM users
+        WHERE userId=#{id}
+    </delete>
+</mapper>

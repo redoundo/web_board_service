@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: boardUpdate})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="margin-top: 15px" class="updateFirstBlock" th:fragment="boardUpdate" th:object="${results}"
+         th:with="contents= ${results.get('contents')}">
+        <span class="updateHeadTitle" th:object="${categories}">자유 게시판 관리</span>
+        <form class="fillTheseBoxes" id="boardUpdateForm">
+            <input type="hidden" name="userId" th:value="${contents.get('userId')}"/>
+            <input type="hidden" name="postTable" value=1 />
+            <span class="aDetail">
+                <span class="aDetailName" style="border-top: 2px solid gainsboro;"> 분류* </span>
+                <span class="aDetailValue">
+                    <select name="categoryId" required style="flex-grow: 1; max-width: 200px;font-size: 12px; padding-top: 2.2px;
+                     padding-bottom: 2.2px; padding-right: 135px; padding-left: 10px; ">
+                        <option value=null>카테고리 선택</option>
+                        <option th:if="${categories} != null"
+                                th:each="category: ${categories}"
+                                th:value="${category.getCategoryId()}"
+                                th:text="${category.getCategoryName()}"
+                                th:selected="${contents.get('categoryId') == category.getCategoryId()}">
+                        </option>
+                    </select>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 제목* </span>
+                <span class="aDetailValue">
+                    <input required class="grow" placeholder="제목을 입력해 주세요" style=" font-size: 12px;padding: 3px 10px;flex-grow: 1;"
+                           type="text" name="title" maxlength="99" th:value="${contents.get('title')}" />
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 내용* </span>
+                <span class="aDetailValue">
+                    <textarea required name="content" maxlength="3999" th:value="${contents.get('content')}"
+                              placeholder="내용을 입력해 주세요" style="height: 90px;flex-grow: 1;" class="grow">
+                    </textarea>
+                    <input type="hidden" th:value="${contents.get('boardId')}" name="boardId"/>
+                </span>
+            </span>
+            <div th:replace="~{admin/global/upload::fileUpload(2, 5, ${results.get('files')})}"></div>
+            <div th:replace="~{admin/board/comment::boardComment(${results.get('comments')})}"></div>
+        </form>
+        <span>
+            <span class="buttons">
+                <input type="submit" form="boardUpdateForm" value="등록" class="ok"
+                       formenctype="multipart/form-data" formmethod="post"
+                       th:formaction="${@environment.getProperty('server.endpoint') + '/admin/board/update/update'}" />
+                <button th:onclick="deleteQueryString('/admin/board', true, [[${param.contentId}]])"
+                        type="button" class="goBack">목록</button>
+                <button class="deleteButton" type="button" th:onclick="askConfirm('삭제')?
+                    requesting.post({path:  ${@environment.getProperty('server.endpoint')} + '/api/admin/board/update/delete',
+                     data: {'contentId': [[${param.contentId}]], 'userId': [[${contents.get('userId')}]]},
+                      success: deleteSuccess, error: onError})
+                    : null">삭제</button>
+            </span>
+        </span>
+        <script th:inline="javascript">
+            function deleteSuccess(val){
+                alert("게시글이 삭제 되었습니다.");
+                goTo("board/update", "board", 'delete', "contentId", [[${param.contentId}]])
+            }
+            function deleteCommentSuccess(val){
+                console.log(val);
+                if((val??null) === null) return;
+
+                document.getElementById("comment_" + val['answerId'].toString()).remove();
+            }
+            function insertSuccess(val){
+                console.log(val);
+                if((val??null) === null) return;
+                const existComment = document.getElementsByClassName("comments");
+                const index = existComment.length + 1;
+                const commentDeletePath = [[${@environment.getProperty('server.endpoint')}]] + "/api/admin/board/update/comment/delete";
+                const html = `
+                    <div class="comments" id="comment_${val['answerId']}">
+                        <span>
+                            <span>${val['nickname']}</span>
+                            <span>${val['submitDate']}</span>
+                            <button type="button" onclick="requesting.post({path: commentDeletePath,
+                             data: {answerId: ${val['answerId']}, contentId: [[${param.contentId}]][0]}, success: deleteCommentSuccess, error: onError})">삭제</button>
+                        </span>
+                        <p>${val['answer']}</p>
+                    </div>
+                `
+                const block = document.getElementById("commentDiv")
+                block.insertAdjacentHTML("beforeend", html);
+            }
+            function insertComment(){
+                const comment = document.getElementsByName("comment")[0];
+                const text = comment.value;
+                const url = "http://localhost:8080/api/admin/board/update/comment";
+                const commentContent = {"comment": text, "postId": [[${param.contentId}]][0]}
+                console.log(commentContent)
+                requesting.post({path: url, data: commentContent, success: insertSuccess, error: onError})
+            }
+        </script>
+    </div>
+</body>
+</html>

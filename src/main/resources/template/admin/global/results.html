@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="results(table ,total, currentMaxCount, currentPage, contents)" >
+        <hr style="margin:5px;"/>
+        <div th:with="goToDetail=|/admin/${table}/update|">
+            <!--문의 게시글 테이블 헤더 시작-->
+            <span th:if="${table == 'question'}" style="padding: 5px; display: flex; flex-direction: row; text-align: center;">
+                <span style="flex-basis: 7%">번호</span>
+                <span style="flex-basis: 45%">제목</span>
+                <span style="flex-basis: 8%">조회</span>
+                <span style="flex-basis: 19%">등록일시</span>
+                <span style="flex-basis: 13%">등록자</span>
+            </span>
+            <!--문의 게시글 테이블 헤더 끝-->
+            <!--그외의 게시글 테이블 헤더 시작-->
+            <span th:if="${table != 'question'}"
+                  style="padding: 5px; display: flex; flex-direction: row; text-align: center;">
+                <span style="flex-basis: 7%">번호</span>
+                <span style="flex-basis: 8%">분류</span>
+                <span style="flex-basis: 45%">제목</span>
+                <span style="flex-basis: 8%">조회</span>
+                <span style="flex-basis: 19%">등록일시</span>
+                <span style="flex-basis: 13%">등록자</span>
+            </span>
+            <!--그외의 게시글 테이블 헤더 끝-->
+
+            <div th:if="${contents != null && contents.size() > 0 && total != null && total > 0}" th:with="idName=|${table == 'gallery'? 'board' : table}Id|">
+                <span th:each="content, contentStatus : ${contents}"
+                       th:style="${table == 'notify' && content.get('fixOnTop') != null && content.get('fixOnTop') ?
+                        'padding: 5px; display: flex; flex-direction: row; text-align: center; background-color: gainsboro;align-items: center;':
+                        'padding: 5px; display: flex; flex-direction: row; text-align: center;align-items: center;'}" >
+                    <span style="flex-basis: 7%" th:text="${(total - ((currentPage - 1) * currentMaxCount)) - contentStatus.index}">
+                    </span>
+                    <span style="flex-basis: 8%; text-decoration: underline"
+                          th:text="${table == 'question'? '' : content.get('categoryName')}"></span>
+
+                    <!--갤러리 게시글 제목 시작-->
+                    <span th:if="${table == 'gallery'}"
+                          style="text-align: left; flex-basis: 45%;display: flex; flex-direction: row; overflow: hidden;
+                           text-overflow: ellipsis; white-space: nowrap;align-items: center;" th:with="files=${content.get('files')}">
+
+                        <img style="height: 50px;margin-right:5px;"  alt="갤러리 이미지"
+                             th:src="${#strings.contains(files, '||')? #strings.listSplit(files, '||')[0] : files}"/>
+                        <span style="margin-left: 5px ;" th:text="|+${#strings.contains(files, '||')? #strings.listSplit(files, '||').size() : 1}|"></span>
+
+                        <span style="overflow: hidden; text-overflow: ellipsis">
+                            <button type="button" style="text-decoration: underline; margin-right: 5px" th:text="${content.get('title')}"
+                                    th:onclick="addQueryString([[${goToDetail}]] , [[${content.get(idName)}]])">
+                            </button>
+                        </span>
+                        <span style="text-decoration: underline">new!</span>
+                    </span>
+                    <!--갤러리 게시글 제목 끝-->
+
+                    <!--그외의 게시글 제목 시작-->
+                    <span th:if="${table != 'gallery'}" style="text-align: left; flex-basis: 45%;display: flex; flex-direction: row; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;align-items: center;">
+                        <span style="overflow: hidden; text-overflow: ellipsis">
+                            <button type="button" style="text-decoration: underline; margin-right: 5px" th:text="${content.get('title')}"
+                                    th:onclick="addQueryString([[${goToDetail}]]  , [[${content.get(idName)}]])">
+                            </button>
+                        </span>
+                        <span style="text-decoration: underline">new!</span>
+                        <span th:if="${table == 'board' && content.get('fileExistence') > 0}"><i class="bi bi-paperclip"></i></span>
+                         <span th:if="${table == 'question' && content.get('isLocked')}"><i class="bi bi-lock-fill"></i></span>
+                    </span>
+                    <!--그외의 게시글 제목 끝-->
+
+                    <span style="flex-basis: 8%" th:text="${content.get('viewCount')}"></span>
+                    <span style="flex-basis: 19%" th:text="${content.get('submitDate')}"></span>
+                    <span style="flex-basis: 13%" th:text="${content.get('nickname')}"></span>
+                </span>
+            </div>
+            <div style=" display: flex; justify-content: center; padding: 10px; margin-top: 10px;"
+                 th:unless="${contents != null && contents.size() > 0 && total != null && total > 0}">
+                게시글이 존재하지 않습니다.
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.BoardMapper">
+    <sql id="whereCondition">
+        WHERE submitDate BETWEEN #{condition.start} AND #{condition.end} AND postTable=#{table}
+        <if test="condition.keyword != null and !condition.keyword.isEmpty and condition.keyword != 'null'">
+            AND (
+            title LIKE '%'||#{condition.keyword}||'%'
+            OR content LIKE '%'||#{condition.keyword}||'%'
+            OR (SELECT users.userId FROM users WHERE users.nickname LIKE '%'||#{condition.keyword}||'%')
+            AS user=#{condition.keyword}
+            )
+        </if>
+        <if test="condition.categoryId != null and condition.categoryId > 0">
+            AND categoryId=#{condition.categoryId}
+        </if>
+    </sql>
+    <select id="getAllContentByCondition"  resultType="java.util.Map">
+        SELECT boardId, title, content, viewCount,
+               submitDate, updateDate,
+                (SELECT users.nickname
+                FROM users
+                WHERE users.userId=boards.userId
+                ) AS nickname,
+               (SELECT categories.categoryName
+                FROM categories
+                WHERE categories.categoryId=boards.categoryId
+                ) AS categoryName,
+                (SELECT Count(*)
+                FROM answers
+                WHERE answers.postId=boards.boardId AND answers.postTable=#{table}
+                ) AS commentCount,
+                (SELECT IF(COUNT(*) > 0, true, false)
+                FROM images
+                WHERE images.postId=boards.boardId
+                ) AS fileExistence
+        FROM boards
+        <include refid="whereCondition"/>
+        ORDER BY #{condition.orderByColumn}
+        <if test="condition.orderByDesc">
+        DESC
+        </if>
+        LIMIT #{condition.page}, #{condition.maxCount}
+    </select>
+    <select id="allContentsTotal" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS count
+        FROM boards
+        <include refid="whereCondition"/>
+    </select>
+    <select id="getContentByBoardId" parameterType="java.lang.Integer" resultType="java.util.Map">
+        SELECT boardId, title, content, userId,
+            viewCount, submitDate, updateDate, categoryId,
+            (SELECT users.nickname
+                FROM users
+                WHERE users.userId=boards.userId
+            ) AS nickname,
+            (SELECT categories.categoryName
+                FROM categories
+                WHERE categories.categoryId=boards.categoryId
+            ) AS categoryName
+        FROM boards
+        WHERE boardId=#{id}
+    </select>
+    <select id="getGalleryContents" resultType="java.util.Map">
+        SELECT boardId, title, content, viewCount,
+        submitDate, updateDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=boards.userId
+        ) AS nickname,
+        (SELECT categories.categoryName
+        FROM categories
+        WHERE categories.categoryId=boards.categoryId
+        ) AS categoryName,
+        (SELECT GROUP_CONCAT(images.imagePath SEPARATOR '||')
+        FROM images
+        WHERE images.postId=boards.boardId AND images.postTable=1
+        ) AS files
+        FROM boards
+        <include refid="whereCondition"/>
+        ORDER BY #{condition.orderByColumn}
+        <if test="condition.orderByDesc">
+        DESC
+        </if>
+        LIMIT #{condition.page}, #{condition.maxCount}
+    </select>
+    <select id="limitedBoard" resultType="java.util.Map">
+        SELECT boardId, title, content, viewCount,
+                submitDate, updateDate,
+                (SELECT IF(Count(*) > 0, true, false)
+                FROM images
+                WHERE images.postTable=0 AND images.postId=boards.boardId
+                ) AS fileExistence,
+                (SELECT Count(*)
+                FROM answers
+                WHERE answers.postId=boards.boardId AND answers.postTable=0
+                ) AS commentCount,
+                (SELECT users.nickname
+                FROM users
+                WHERE users.userId=boards.userId
+                ) AS nickname,
+                (SELECT categories.categoryName
+                FROM categories
+                WHERE categories.categoryId=boards.categoryId
+                ) AS categoryName
+        FROM boards
+        WHERE postTable = #{table}
+        ORDER BY submitDate DESC
+        LIMIT 0, #{limit}
+    </select>
+    <select id="limitedGallery" resultType="java.util.Map">
+        SELECT boardId, title, content, viewCount,
+            submitDate, updateDate,
+            (SELECT GROUP_CONCAT(images.imagePath SEPARATOR '||')
+            FROM images
+            WHERE images.postTable=1 AND images.postId=boards.boardId
+            ) AS files,
+            (SELECT users.nickname
+            FROM users
+            WHERE users.userId=boards.userId
+            ) AS nickname,
+            (SELECT categories.categoryName
+            FROM categories
+            WHERE categories.categoryId=boards.categoryId
+            ) AS categoryName
+        FROM boards
+        WHERE postTable=#{table}
+        ORDER BY submitDate DESC
+        LIMIT 0 ,#{limit}
+    </select>
+    <select id="totalCount" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT Count(*) AS total
+        FROM boards
+        WHERE postTable=#{table}
+    </select>
+    <update id="updateBoardContent" parameterType="updateBoard">
+        UPDATE boards
+        SET title=#{title}, content=#{content}, categoryId=#{categoryId}
+        WHERE boardId=#{boardId}
+    </update>
+    <update id="updateViewCount">
+        UPDATE boards
+        SET viewCount = viewCount + 1
+        WHERE boardId=#{id}
+    </update>
+    <insert id="insertNewContent" parameterType="boardSubmission" useGeneratedKeys="true"
+            keyColumn="boardId" keyProperty="boardId">
+        INSERT INTO boards(title, content, userId, categoryId, postTable)
+        VALUES(#{title}, #{content}, #{userId}, #{categoryId}, #{postTable})
+    </insert>
+    <select id="getInsertedBoardId" parameterType="boardContent" resultType="java.lang.Integer">
+        SELECT boardId
+        FROM boards
+        WHERE title=#{title} AND nickname=#{nickname}
+          AND categoryId=#{categoryId} AND content=#{content}
+    </select>
+    <select id="biggestBoardId" resultType="java.lang.Integer">
+        SELECT boardId
+        FROM boards
+        ORDER BY boardId DESC
+        LIMIT 0,1
+    </select>
+    <select id="newBoardId" parameterType="boardSubmission" resultType="java.lang.Integer">
+        SELECT boardId
+        FROM boards
+        WHERE title=#{title} AND userId=#{userId}
+        AND categoryId=#{categoryId} AND content=#{content}
+        AND postTable=#{postTable}
+    </select>
+    <delete id="deleteContentById">
+        DELETE FROM boards
+        WHERE boardId=#{contentId} AND userId=#{userId}
+    </delete>
+</mapper>

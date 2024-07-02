@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="searchOptions(categories, h4, url)">
+        <span style="margin-top: 15px; margin-bottom: 20px; font-weight: bold; font-size: 19px" th:text="${h4}"></span>
+        <form id="searchOptionForm" method="get" th:action="${url}">
+            <span style="border-width: 2px; padding: 0.5em; min-width: 650px; display: flex;flex-direction: row;justify-content: space-between; align-items: center ;">
+                <span style="display: flex;flex-direction: row; justify-content: space-between;flex-basis: 55%; max-width: 350px; min-width: 308px; padding-right: 8px; align-items: center;">
+                    <span>등록일시</span>
+                    <input type="date" style="padding:2px; padding-left:6px; padding-right:5px;" name="start"
+                           th:value="${param.start != null? param.start : #calendars.format(#calendars.createNow().add(2, -1), 'yyyy-MMMM-dd')}"/>
+                    <span>~</span>
+                    <input type="date" name="end"  style="padding:2px; padding-left:6px; padding-right:5px;"
+                           th:value="${param.end != null? param.end : #dates.format(#dates.createNow(), 'yyyy-MMMM-dd')}"/>
+                </span>
+                <span style="flex-basis: 8%; margin-right: 15px; " th:if="${categories != null}">
+                    <select name="categoryId"
+                            style=" width: 150px; border-width: 2px; padding-left: 5px; padding-right: 5px; padding-top: 3px; padding-bottom: 3px; ">
+                        <option value=null>전체 분류</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category.getCategoryId()}"
+                                th:text="${category.getCategoryName()}">
+                        </option>
+                    </select>
+                </span>
+                <span style="flex-basis: 37%; display: flex; flex-direction: row;" >
+                    <input type="search" style="border-width: 2px; padding-left: 10px; padding-right: 10px; padding-top: 2px; padding-bottom: 2px; flex-grow: 1; "
+                            name="keyword" placeholder="제목 or 내용" />
+                    <input style="margin-left: 10px; min-width: 55px; background-color: gainsboro; color: white;padding: 5px;padding-left: 8px;padding-right:8px;border-radius: 7px;"
+                           value="검색" type="submit"/>
+                </span>
+            </span>
+            <span style="display: flex; flex-direction: row; justify-content: space-between; padding: 10px;">
+                <span style="border-width: 2px; padding: 3px; padding-left: 4px; padding-right: 4px">
+                    <select name="maxCount">
+                        <option value=10 th:selected="${param.maxCount} == 10">
+                            10 개씩 보기
+                        </option>
+                        <option value=20 th:selected="${param.maxCount == null || param.maxCount == 20 ? true: false}">20 개씩 보기</option>
+                        <option value=30 th:selected="${param.maxCount} == 30">30 개씩 보기</option>
+                        <option value=40 th:selected="${param.maxCount} == 40">40 개씩 보기</option>
+                        <option value=50 th:selected="${param.maxCount} == 50">50 개씩 보기</option>
+                    </select>
+                </span>
+                <span  style="display: flex; flex-direction: row; justify-content: space-around;align-items: center;">
+                    <span style="margin-right: 10px;">정렬</span>
+                    <span style=" border-width: 2px; padding: 3px; padding-left: 4px; padding-right: 4px; margin-right: 10px; ">
+                        <select name="orderByColumn">
+                            <option value="submitDate"
+                                    th:selected="${param.orderByColumn != null? param.orderByColumn == 'submitDate' : true}">
+                                등록일시
+                            </option>
+                            <option value="categoryId"
+                                    th:selected="${param.orderByColumn != null? param.orderByColumn == 'categoryId' : false}">
+                                분류
+                            </option>
+                            <option value="title"
+                                    th:selected="${param.orderByColumn != null? param.orderByColumn == 'title' : false}">
+                                제목
+                            </option>
+                            <option value="viewCount"
+                                    th:selected="${param.orderByColumn != null? param.orderByColumn == 'viewCount' : false}">
+                                조회수
+                            </option>
+                        </select>
+                    </span>
+                    <span style="border-width: 2px; padding: 3px; padding-left: 4px; padding-right: 4px">
+                        <select name="orderByDesc">
+                            <option value=0 th:selected="${param.orderByDesc != null? param.orderByDesc == 0: true}">
+                                내림차순
+                            </option>
+                            <option value=1 th:selected="${param.orderByDesc != null? param.orderByDesc == 1: false}">
+                                오름차순
+                            </option>
+                        </select>
+                    </span>
+                </span>
+            </span>
+        </form>
+    </div>
+</body>
+</html>

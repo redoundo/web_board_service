@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko" th:replace="~{main::layout(~{:: galleryWrite})}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div style="margin-top: 15px" class="writeFirstBlock" th:fragment="galleryWrite">
+        <span class="writeHeadTitle">갤러리 게시글 수정</span>
+        <form id="galleryWriteForm" th:object="${categories}" onsubmit="askConfirm('등록')" enctype="multipart/form-data">
+            <span class="aDetail" >
+                <span class="aDetailName" style="border-top: 2px solid gainsboro;"> 분류* </span>
+                <span class="aDetailValue">
+                    <select name="categoryId"  >
+                        <option value=null>카테고리 선택</option>
+                        <option th:if="${categories} != null"
+                                th:each="category : ${categories}"
+                                th:value="${category.getCategoryId()}"
+                                th:text="${category.getCategoryName}">
+                        </option>
+                    </select>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 제목* </span>
+                <span class="aDetailValue">
+                    <input required class="grow" placeholder="제목을 입력해 주세요" style=" font-size: 12px; padding: 3px 10px;" type="text" name="title" maxlength="99" />
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 내용* </span>
+                <span class="aDetailValue">
+                    <textarea required name="content" maxlength="3999"
+                              placeholder="내용을 입력해 주세요" style="height: 90px" class="grow">
+                    </textarea>
+                </span>
+            </span>
+            <span class="aDetail">
+                <span class="aDetailName"> 첨부 </span>
+                <span class="aDetailValue">
+                    <div th:replace="~{admin/global/upload::fileUpload(2, 5, null)}"></div>
+                </span>
+            </span>
+        </form>
+        <span class="buttons">
+            <input class="ok" type="submit" form="galleryWriteForm" formmethod="post"
+                   th:formaction="${@environment.getProperty('server.endpoint')} + '/admin/gallery/write/insert'"
+                   formenctype="multipart/form-data" value="등록"/>
+            <button class="goBack" type="button" onclick="addQueryString('/admin/gallery', null)">목록</button>
+        </span>
+    </div>
+</body>
+</html>

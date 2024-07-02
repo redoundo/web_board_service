@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.connection.mapper.NotifyMapper">
+    <sql id="whereCondition">
+        WHERE submitDate BETWEEN #{start} AND #{end}
+        <if test="keyword != null and !keyword.isEmpty and keyword != 'null'">
+            AND (
+            title LIKE '%'||#{keyword}||'%'
+            OR content LIKE '%'||#{keyword}||'%'
+            OR (SELECT users.userId FROM users WHERE users.nickname LIKE '%'||#{keyword}||'%')
+            AS user=#{keyword}
+            )
+        </if>
+        <if test="categoryId != null and categoryId > 0">
+            AND notifyCategoryId=#{categoryId}
+        </if>
+    </sql>
+    <select id="allNotifiedContents" parameterType="searchCondition"
+            resultType="java.util.Map">
+        SELECT notifyId, title,
+               content, viewCount,
+                userId, submitDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=notifies.userId
+        ) AS nickname,
+            (
+                SELECT notifyCategory.categoryName
+                FROM notifyCategory
+                WHERE notifyCategory.categoryId=notifies.notifyCategoryId
+            ) AS categoryName
+        FROM notifies
+        <include refid="whereCondition"/>
+        ORDER BY #{orderByColumn}
+        <if test="orderByDesc">
+             DESC
+        </if>
+        LIMIT #{page}, #{maxCount}
+    </select>
+    <select id="notifiedContentsTotal" parameterType="searchCondition"
+            resultType="java.lang.Integer">
+        SELECT COUNT(*) AS count
+        FROM notifies
+        <include refid="whereCondition"/>
+    </select>
+    <select id="getNotifyContentById" parameterType="java.lang.Integer"
+            resultType="java.util.Map">
+        SELECT notifyId, title,
+               content, viewCount,
+               userId, submitDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=notifies.userId
+        ) AS nickname,
+                IF(fixOnTop > 0, true, false) AS fixOnTop,
+               (
+                   SELECT notifyCategory.categoryName
+                    FROM notifyCategory
+                    WHERE notifyCategory.categoryId=notifies.notifyCategoryId
+                ) AS categoryName
+        FROM notifies
+        WHERE notifyId=#{id}
+    </select>
+    <select id="limitedNotification" parameterType="java.lang.Integer"  resultType="java.util.Map">
+        SELECT notifyId, title,
+            content, viewCount,
+            userId, submitDate,
+        (SELECT users.nickname
+        FROM users
+        WHERE users.userId=notifies.userId
+        ) AS nickname,
+            (
+                SELECT notifyCategory.categoryName
+                FROM notifyCategory
+                WHERE notifyCategory.categoryId=notifies.notifyCategoryId
+            ) AS categoryName
+        FROM notifies
+        ORDER BY submitDate DESC
+        LIMIT 0, #{limit}
+    </select>
+    <select id="newNotificationId">
+        SELECT notifyId
+        FROM notifies
+        WHERE userId=#{userId} AND title=#{title}
+        AND notifyCategoryId=#{categoryId} AND content=#{content}
+    </select>
+    <select id="totalCount" resultType="java.lang.Integer">
+        SELECT Count(*) AS total
+        FROM notifies
+    </select>
+    <update id="updateViewCount">
+        UPDATE notifies
+        SET viewCount = viewCount + 1
+        WHERE notifyId=#{id}
+    </update>
+    <update id="updateNotification">
+        UPDATE notifies
+        SET content=#{content}, title=#{title}, notifyCategoryId=#{categoryId}, fixOnTop=#{fixOnTop}
+        WHERE notifyId=#{notifyId}
+    </update>
+    <insert id="insertNotification" useGeneratedKeys="true" parameterType="notifyEntity"
+            keyColumn="notifyId" keyProperty="notifyId">
+        INSERT INTO notifies(title, content, notifyCategoryId, userId, fixOnTop)
+        VALUES(#{title}, #{content}, #{categoryId}, #{userId}, #{fixOnTop})
+    </insert>
+    <delete id="deleteNotification">
+        DELETE FROM notifies
+        WHERE userId=#{adminId} AND notifyId=#{id}
+    </delete>
+</mapper>
