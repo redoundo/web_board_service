@@ -51,7 +51,7 @@ public class RedisCacheFilter  extends OncePerRequestFilter {
                     context.setAuthentication(authentication);
                     repository.saveContext(context, request, response);
                     request.setAttribute("redisKey", redisValue);
-                    response.setHeader("redisKey", redisValue);
+//                    response.setHeader("redisKey", redisValue);
                     Cookie cookie = new Cookie("redisKey", redisValue);
                     cookie.setPath("/");
                     cookie.setMaxAge(12000);
@@ -65,7 +65,7 @@ public class RedisCacheFilter  extends OncePerRequestFilter {
             Authentication authentication = cacheService.parseACache(sessionId);
             if(authentication != null){
                 request.setAttribute("redisKey", sessionId);
-                response.setHeader("redisKey", sessionId);
+//                response.setHeader("redisKey", sessionId);
                 Cookie cookie = new Cookie("redisKey", sessionId);
                 cookie.setMaxAge(12000);
                 cookie.setPath("/");

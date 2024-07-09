@@ -9,6 +9,7 @@ import com.study.connection.service.CacheService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -110,6 +111,10 @@ public class AdminController {
         context.setAuthentication(auth);
         this.repository.saveContext(context, request, response);
         String sessionId = request.getRequestedSessionId();
+        if(!checking.checkString(sessionId)) {
+            HttpSession session = request.getSession(true);
+            sessionId = session.getId();
+        }
 //        this.registry.registerNewSession(sessionId, details);
         this.cacheService.putCache(sessionId, new UsernamePasswordAuthenticationToken(details, "", details.getAuthorities()));
         Cookie cookie = new Cookie("redisKey", request.getRequestedSessionId());

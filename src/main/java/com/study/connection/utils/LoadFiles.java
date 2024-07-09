@@ -127,29 +127,6 @@ public class LoadFiles {
                         .postTable(postTable)
                         .build();
                 list.add(entity);
-
-
-
-
-//                try (FileOutputStream outputStream = new FileOutputStream(uploadPath)) {
-//                    InputStream inputStream = file.getInputStream();
-//                    byte [] bytes = new byte[5 * 1024 * 1024]; //이 크기만큼만 inputStream 에서 가져온다.
-//                    int exist = 0;
-//                    //exist 는 버퍼에 있는 바이트의 길이를 의미. 더이상 읽어올 것이 없을 경우 -1을 반환.
-//                    while ((exist = inputStream.read(bytes)) != -1) {
-//                        outputStream.write(bytes , 0 , exist); //bytes = 내용 , 0 = 시작지점 , exist = 남아있는 총 길이
-//                    }
-//                    inputStream.close();
-//
-//                    list.add(entity);
-//
-//                } catch (IOException e){
-//                    if (entity != null && entity.getPostId() != null) {
-//                        // 거의 존재하지 않겠지만 entity 는 만들어졌지만 모종의 이유로 예외가 발생했을 때 , list 에 넣는다.
-//                        list.add(entity);
-//                    }
-//                    break;// 지금 것 아니면 전에 처리된 것이라도 반환하기 위해 break;
-//                }
             }
         }
         return list;

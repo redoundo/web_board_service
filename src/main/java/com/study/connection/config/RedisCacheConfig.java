@@ -27,16 +27,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @ImportAutoConfiguration({RedisAutoConfiguration.class, RedisRepositoriesAutoConfiguration.class})
 public class RedisCacheConfig implements CachingConfigurer {
 
-    @Value("${spring.data.redis.host}")
+    @Value("${redis.host}")
     private String host;
 
-    @Value("${spring.data.redis.port}")
+    @Value("${redis.port}")
     private int port;
 
-    @Value("${spring.data.redis.password}")
+    @Value("${redis.password}")
     private String password;
 
-    @Value("${spring.data.redis.username}")
+    @Value("${redis.username}")
     private String userName;
 
     /**

@@ -19,13 +19,13 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.DispatcherServlet;
 
+@Lazy
 @AutoConfiguration
 @ImportAutoConfiguration({MultipartAutoConfiguration.class})
 @ConditionalOnClass({ Servlet.class, StandardServletMultipartResolver.class, MultipartConfigElement.class })
 @ConditionalOnProperty(prefix = "spring.servlet.multipart", name = "enabled", matchIfMissing = true)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties(MultipartProperties.class)
-@Lazy
 public class MultipartConfig {
     private final MultipartProperties multipartProperties;
     MultipartConfig(){
